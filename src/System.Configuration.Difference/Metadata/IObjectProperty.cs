@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace System.Configuration.Difference {
+namespace System.Configuration.Difference.Metadata {
 
     public interface IObjectProperty {
 

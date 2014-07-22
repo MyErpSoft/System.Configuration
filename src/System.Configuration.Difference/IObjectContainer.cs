@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration.Difference.Metadata;
 
 namespace System.Configuration.Difference {
     

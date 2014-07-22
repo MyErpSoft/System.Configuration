@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Configuration.Difference.Metadata;
 
 namespace System.Configuration.Difference {
-
 
     public sealed class ObjectManager {
 

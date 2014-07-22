@@ -2,7 +2,7 @@
 
 namespace System.Configuration.Difference.Utils {
     
-    public static class ExceptionHelper {
+    internal static class ExceptionHelper {
 
         internal static void ThrowArgumentNull(string paramName) {
             throw new ArgumentNullException(paramName);
