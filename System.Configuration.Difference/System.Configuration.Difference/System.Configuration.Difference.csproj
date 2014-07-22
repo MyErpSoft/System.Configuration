@@ -31,16 +31,25 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Binder.cs" />
+    <Compile Include="IConverter.cs" />
+    <Compile Include="IObjectBinder.cs" />
+    <Compile Include="DifferenceSerializer.cs" />
+    <Compile Include="IDifferenceRecord.cs" />
+    <Compile Include="IObjectContainer.cs" />
+    <Compile Include="IObjectDifferenceRecord.cs" />
+    <Compile Include="IDifferenceRecordReader.cs" />
+    <Compile Include="IObjectProperty.cs" />
+    <Compile Include="IObjectType.cs" />
+    <Compile Include="IPropertyDifferenceRecord.cs" />
+    <Compile Include="ObjectContainer.cs" />
+    <Compile Include="ObjectManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReadContext.cs" />
+    <Compile Include="RecordTypeKind.cs" />
+    <Compile Include="Utils\ExceptionHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
