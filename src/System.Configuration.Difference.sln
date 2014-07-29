@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.21005.1
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Configuration.Difference", "System.Configuration.Difference\System.Configuration.Difference.csproj", "{1519BF59-8806-4728-8C8D-8EF637B4E360}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Configuration.DataEntities", "System.Configuration.DataEntities\System.Configuration.DataEntities.csproj", "{DF8AA732-433F-4077-9EA9-9DF575D049F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Configuration.DataEntities.Test", "System.Configuration.DataEntities.Test\System.Configuration.DataEntities.Test.csproj", "{E1466A9D-F181-4596-A408-319163C6266D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,14 @@ Global
 		{1519BF59-8806-4728-8C8D-8EF637B4E360}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1519BF59-8806-4728-8C8D-8EF637B4E360}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1519BF59-8806-4728-8C8D-8EF637B4E360}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF8AA732-433F-4077-9EA9-9DF575D049F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF8AA732-433F-4077-9EA9-9DF575D049F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF8AA732-433F-4077-9EA9-9DF575D049F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF8AA732-433F-4077-9EA9-9DF575D049F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1466A9D-F181-4596-A408-319163C6266D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1466A9D-F181-4596-A408-319163C6266D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1466A9D-F181-4596-A408-319163C6266D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1466A9D-F181-4596-A408-319163C6266D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
