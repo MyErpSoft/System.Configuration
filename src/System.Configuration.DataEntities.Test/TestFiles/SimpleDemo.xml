@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- ObjectContainer 是xml文件的根，由http://schemas.myerpsoft.com/dcxml/2015规范定义，所有的对象将存放到这个下面 -->
+<!-- 你需要引用对象类型的库，可以使用clr-namespace:SDKSample;assembly=SDKSampleLibrary这样的方式引用.net的dll,此设计效仿xaml，请参考https://msdn.microsoft.com/library/ms747086(v=vs.110).aspx -->
+<!-- 你可以指定一个命名空间，这样就隔离了oid，防止与其他配置文件的oid出现冲突 -->
+<x:ObjectContainer
+        xmlns="clr-namespace:System.Configuration.DataEntities.Test;assembly=System.Configuration.DataEntities.Test"
+        xmlns:x="http://schemas.myerpsoft.com/dcxml/2015"
+        x:namespace="System.Configuration.DataEntities.Test.SimpleDemo">
+  
+  <!-- Button是你引用的dll中可使用的类型，下面的片段定义了一个实例，并指定了对象的唯一编号 -->
+  <Button x:oid="1">
+    <Text>OK</Text>
+    <Size>253,172</Size>
+  </Button>
+
+</x:ObjectContainer>

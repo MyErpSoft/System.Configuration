@@ -22,6 +22,23 @@ namespace System.Configuration.DataEntities.Test {
             Assert.IsFalse(names.Contains(target.GetName(n2)));
 
             Assert.AreEqual<string>(n1, target.GetName(n1).ToString());
+
+            var n3 = "System.Configuration.DataEntities.Test";
+            var n4 = "System.Configuration.DataEntities.Test,version=2.1";
+            Assert.AreEqual<string>(n3,target.GetName(n3).ToString());
+            Assert.AreEqual<string>(n4, target.GetName(n4).ToString());
+        }
+
+        [TestMethod]
+        public void TestTryGetName() {
+            MetadataNameContainer target = new MetadataNameContainer();
+
+            var n1 = "Test";
+            MetadataName name;
+            Assert.IsFalse(target.TryGetName(n1, out name));
+            var name2 = target.GetName(n1);
+            Assert.IsTrue(target.TryGetName(n1, out name));
+            Assert.ReferenceEquals(name, name2);
         }
 
         [TestMethod]
@@ -52,16 +69,23 @@ namespace System.Configuration.DataEntities.Test {
             for (int i = 0; i < chars.Length; i++) {
                 chars[i] = 'f';
             }
-            target.GetName(new string(chars));
-            target.GetName("_test");
-            target.GetName("__test");
-            target.GetName("test_");
-            target.GetName("test_test");
-            target.GetName("test123");
-            target.GetName("_012");
+            target.GetVerifyName(new string(chars));
+            target.GetVerifyName("_test");
+            target.GetVerifyName("__test");
+            target.GetVerifyName("test_");
+            target.GetVerifyName("test_test");
+            target.GetVerifyName("test123");
+            target.GetVerifyName("_012");
         }
 
         [TestMethod,ExpectedException(typeof(ArgumentNullException))]
+        public void TestCheckName_0() {
+            MetadataNameContainer target = new MetadataNameContainer();
+
+            target.GetVerifyName(null);
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
         public void TestCheckName_1() {
             MetadataNameContainer target = new MetadataNameContainer();
 
@@ -72,14 +96,14 @@ namespace System.Configuration.DataEntities.Test {
         public void TestCheckName_2() {
             MetadataNameContainer target = new MetadataNameContainer();
 
-            target.GetName("3test");
+            target.GetVerifyName("3test");
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentException))]
         public void TestCheckName_3() {
             MetadataNameContainer target = new MetadataNameContainer();
 
-            target.GetName(string.Empty);
+            target.GetVerifyName(string.Empty);
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentException))]
@@ -90,28 +114,28 @@ namespace System.Configuration.DataEntities.Test {
                 chars[i] = 'f';
             }
 
-            target.GetName(new string(chars));
+            target.GetVerifyName(new string(chars));
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentException))]
         public void TestCheckName_5() {
             MetadataNameContainer target = new MetadataNameContainer();
 
-            target.GetName("汉字");
+            target.GetVerifyName("汉字");
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentException))]
         public void TestCheckName_6() {
             MetadataNameContainer target = new MetadataNameContainer();
 
-            target.GetName("t*()");
+            target.GetVerifyName("t*()");
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentException))]
         public void TestCheckName_7() {
             MetadataNameContainer target = new MetadataNameContainer();
 
-            target.GetName("*()");
+            target.GetVerifyName("*()");
         }
     }
 }

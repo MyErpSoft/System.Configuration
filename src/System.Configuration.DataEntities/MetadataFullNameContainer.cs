@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 
 namespace System.Configuration.DataEntities {
     
@@ -44,8 +39,9 @@ namespace System.Configuration.DataEntities {
             string[] splitStrings = fullName.Split('.');
             var size = splitStrings.Length;
             MetadataName[] names = new MetadataName[size];
+
             for (int i = 0; i < size; i++) {
-                names[i] = this._nameContainer.GetName(splitStrings[i]);
+                names[i] = this._nameContainer.GetVerifyName(splitStrings[i]);
             }
 
             return new SplitNames(names);

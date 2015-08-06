@@ -25,5 +25,28 @@ namespace System.Configuration.DataEntities.Test {
 
             Assert.AreNotEqual<MetadataFullName>(target.GetFullName(n5), target.GetFullName(n7));
         }
+
+        [TestMethod]
+        public void TestGetFullNamePerformance() {
+            MetadataFullNameContainer target = new MetadataFullNameContainer(new MetadataNameContainer());
+
+            var count = 10000;
+            var n = new string[count];
+
+            for (int i = 0; i < count; i++) {
+                n[i] = "System.Configuration.P" + i.ToString();
+            }
+
+            //create
+            for (int i = 0; i < count; i++) {
+                var result = target.GetFullName(n[i]);
+            }
+
+            for (int i = 0; i < count /100; i++) {
+                for (int j = 0; j < count; j++) {
+                    var result = target.GetFullName(n[j]);
+                }
+            }
+        }
     }
 }

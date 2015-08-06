@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Metadata version="1.1">
+
+  <!-- define a namespace -->
+  <Namespace name="MyErpSoft.SalesOrder">
+
+    <!-- Define a object instance.(not is class), -->
+    <DataEntityTypeContainer name="DataEntityTypeContainer">
+      
+    </DataEntityTypeContainer>
+
+    <DataEntityType name="SalesOrderType">
+      <Name>SalesOrder</Name>
+      <Properties>
+        <Item ref="PrintCount" />
+      </Properties>
+    </DataEntityType>
+    
+    <SimpleProperty name="PrintCountBase">
+      <!-- using BusinessType:PrintCount,so DisplayName default value is 'Print Count' -->
+      <BusinessType>Myerpsoft.Common.BusinessTypes.PrintCount,Myerpsoft.Common.BusinessTypes</BusinessType>
+      <DisplayName>AAA</DisplayName>
+    </SimpleProperty>
+    
+    <SimpleProperty name="PrintCount" base="PrintCountBase">
+      <!-- using BusinessType:PrintCount,so DisplayName default value is 'Print Count' -->
+      <BusinessType>Myerpsoft.Common.BusinessTypes.PrintCount,Myerpsoft.Common.BusinessTypes</BusinessType>
+    </SimpleProperty>
+    
+  </Namespace>
+</Metadata>

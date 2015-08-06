@@ -1,0 +1,30 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "Configuration package core system",
+  "authors": [ "tansm" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "dependencies": {
+  },
+
+  "frameworks": {
+    "dnx451": {
+      "dependencies": {
+        "System.Xml.XDocument": "4.0.10-beta-22816"
+      }
+    } /* ,
+    "dnxcore50": {
+      "dependencies": {
+        "System.Collections": "4.0.10",
+        "System.Collections.Concurrent": "4.0.10",
+        "System.Linq": "4.0.0",
+        "System.Threading": "4.0.10",
+        "Microsoft.CSharp": "4.0.0",
+        "System.IO": "4.0.10",
+        "System.Xml.XDocument": "4.0.10"
+      }
+    }*/
+  }
+}

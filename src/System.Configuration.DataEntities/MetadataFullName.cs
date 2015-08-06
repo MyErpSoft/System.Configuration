@@ -12,9 +12,15 @@ namespace System.Configuration.DataEntities {
 
         //_currentWord = 'DataEntities'
         private readonly MetadataName _currentName;
+        public MetadataName CurrentName {
+            get { return this._currentName; }
+        }
 
         //_previous = 'Configuration'
         private readonly MetadataFullName _previous;
+        public MetadataFullName Previous {
+            get { return this._previous; }
+        }
 
         //No need to override the Equals and GetHashCode, Pointer to the object we want to use the default implementation of judgments
         /// <summary>

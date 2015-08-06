@@ -39,10 +39,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MetadataAssembly.cs" />
+    <Compile Include="MetadataContainer.cs" />
     <Compile Include="MetadataFullName.cs" />
     <Compile Include="MetadataFullNameContainer.cs" />
+    <Compile Include="MetadataItem.cs" />
     <Compile Include="MetadataName.cs" />
     <Compile Include="MetadataNameContainer.cs" />
+    <Compile Include="Metadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

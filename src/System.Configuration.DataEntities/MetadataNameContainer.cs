@@ -23,6 +23,14 @@ namespace System.Configuration.DataEntities {
                 throw new ArgumentNullException("name");
             }
 
+            return this._names.GetOrAdd(name, new MetadataName(name));
+        }
+
+        public MetadataName GetVerifyName(string name) {
+            if (name == null) {
+                throw new ArgumentNullException("name");
+            }
+
             MetadataName result;
             if (this._names.TryGetValue(name,out result)) {
                 return result;
@@ -30,9 +38,24 @@ namespace System.Configuration.DataEntities {
 
             if (!VerifyName(name)) {
                 throw new ArgumentException(
-                    string.Format(CultureInfo.CurrentCulture, "Name {0} is not correct, can only be a combination of letters, numbers, and underscores.", name),"name");
+                    string.Format(CultureInfo.CurrentCulture, "Name {0} is not correct, can only be a combination of letters, numbers, and underscores.", name), "name");
             }
             return this._names.GetOrAdd(name, new MetadataName(name));
+        }
+
+        /// <summary>
+        /// Trying to get name corresponding to the MetadataName, but does not automatically add the container.
+        /// </summary>
+        /// <param name="name">The string to test</param>
+        /// <param name="result">If name is found in the container will return it, otherwise it returns null</param>
+        /// <returns>If name is found in the container will return true, otherwise it returns false</returns>
+        public bool TryGetName(string name, out MetadataName result) {
+            if (name == null) {
+                result = null;
+                return false;
+            }
+
+            return this._names.TryGetValue(name, out result);
         }
 
         /// <summary>
@@ -41,7 +64,7 @@ namespace System.Configuration.DataEntities {
         internal static bool VerifyName(string str) {
             char item;
             int endIndex = str.Length;
-            
+
             if (string.IsNullOrEmpty(str)) {
                 return false;
             }

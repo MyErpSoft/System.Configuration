@@ -63,7 +63,14 @@
     <Compile Include="RecordTypeKind.cs" />
     <Compile Include="Utils\ExceptionHelper.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Read.sequencediagram" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Read.sequencediagram.layout">
+      <DependentUpon>Read.sequencediagram</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
