@@ -1,22 +1,14 @@
 ﻿namespace System.Configuration.Core.Dcxml {
 
     internal class DcxmlPart : ConfigurationObjectPart {
-        public override string Name {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        private string _data;
 
-        public override string Namespace {
-            get {
-                throw new NotImplementedException();
-            }
+        public DcxmlPart(string data) {
+            this._data = data;
         }
-
-        public override Package Package {
-            get {
-                throw new NotImplementedException();
-            }
+        
+        protected override void OpenDataCore() {
+            //
         }
     }
 }

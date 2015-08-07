@@ -121,12 +121,14 @@ namespace System.Configuration.Core {
             //由于允许多个仓库包含同一个名称的包，他们之间是差量的关系，我们会包装成一个虚拟的包。
             //大多数情况下是没有差量的包，所以每次总是foreach一个数组，而这个数组只有一个记录，对于计算次数极其多的方法是不合算的。
             if (list != null) {
-                return new CombinedPackage(list);
+                return new CombinedPackage(list.ToArray());
             }
             else if (firstPackage != null) {
                 return firstPackage;
             }
 
+            Utilities.ThrowApplicationException(string.Format(Globalization.CultureInfo.CurrentCulture,
+                "未能找到包：{0}", packageName));
             return null;
         }
         

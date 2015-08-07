@@ -33,6 +33,7 @@
   <ItemGroup>
     <Compile Include="BasicPackage.cs" />
     <Compile Include="CombinedPackage.cs" />
+    <Compile Include="CombinedPart.cs" />
     <Compile Include="ConfigurationObject.cs" />
     <Compile Include="ConfigurationObjectKey.cs" />
     <Compile Include="ConfigurationObjectPart.cs" />
@@ -43,6 +44,7 @@
     <Compile Include="Dcxml\DcxmlRepository.cs" />
     <Compile Include="ObjectContainer.cs" />
     <Compile Include="Package.cs" />
+    <Compile Include="PcakagePartKey.cs" />
     <Compile Include="PlatformUnixUtilities.cs" />
     <Compile Include="PlatformUtilities.cs" />
     <Compile Include="PlatformWinUtilities.cs" />
@@ -50,13 +52,14 @@
     <Compile Include="RepositoryCollection.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

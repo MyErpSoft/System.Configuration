@@ -10,8 +10,13 @@ namespace System.Configuration.Core.Dcxml {
             this._files = files;
         }
 
-        protected override IEnumerable<ConfigurationObjectPart> LoadPartsCore() {
-            throw new NotImplementedException();
+        protected override IEnumerable<KeyValuePair<PcakagePartKey, ConfigurationObjectPart>> LoadPartsCore() {
+            foreach (var file in _files) {
+                var dcxmlFile = new DcxmlFile(file);
+                foreach (var part in dcxmlFile.LoadParts()) {
+                    yield return part;
+                }
+            }
         }
     }
 }
