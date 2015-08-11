@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<x:ObjectContainer
+               xmlns="clr-namespace:company.erp.demo.ui,company.erp.demo.ui"
+               xmlns:x="http://schemas.myerpsoft.com/configuration/2015"
+               xmlns:y="clr-namespace:myui,myui.test"
+               namespace="company.erp.demo" >
+
+  <Window x:name="frmMain" x:base="BasicForm" >
+    <Text>demo</Text>
+  </Window>
+
+  <y:MyButton x:name="btnOK">
+    <Text>OK</Text>
+  </y:MyButton>
+
+</x:ObjectContainer>

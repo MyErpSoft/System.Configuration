@@ -14,14 +14,14 @@ namespace System.Configuration.Core {
         /// 派生类重载此方法，用于加载所有的部件。
         /// </summary>
         /// <returns>可枚举的部件集合，所有部件必须完成命名的检查，以及让所有命名字符串公用字符串引用。</returns>
-        protected abstract IEnumerable<KeyValuePair<PcakagePartKey, ConfigurationObjectPart>> LoadPartsCore();
+        protected abstract IEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>> LoadPartsCore();
 
-        private Dictionary<PcakagePartKey, ConfigurationObjectPart> GetParts() {
+        private Dictionary<FullName, ConfigurationObjectPart> GetParts() {
             lock (this) {
                 if (_parts == null) {
-                    Dictionary<PcakagePartKey, ConfigurationObjectPart> parts = new Dictionary<PcakagePartKey, ConfigurationObjectPart>(PcakagePartKey.Comparer);
+                    Dictionary<FullName, ConfigurationObjectPart> parts = new Dictionary<FullName, ConfigurationObjectPart>(FullName.Comparer);
                     var loadedParts = this.LoadPartsCore().GetEnumerator();
-                    KeyValuePair<PcakagePartKey, ConfigurationObjectPart> current;
+                    KeyValuePair<FullName, ConfigurationObjectPart> current;
                     try {
                         while (loadedParts.MoveNext()) {
                             current = loadedParts.Current;
@@ -32,7 +32,7 @@ namespace System.Configuration.Core {
                     }
                     catch (ArgumentException) {
                         Utilities.ThrowApplicationException(string.Format(CultureInfo.CurrentCulture,
-                            "在配置文件中出现重复的名称:{0}", loadedParts.Current.Key));
+                            "在同一个包配置文件 {0} 中出现重复的名称:{1}", this.Name, loadedParts.Current.Key));
                     }
 
                     this._parts = parts;
@@ -42,16 +42,11 @@ namespace System.Configuration.Core {
             return this._parts;
         }
 
-        private Dictionary<PcakagePartKey, ConfigurationObjectPart> _parts;
+        private Dictionary<FullName, ConfigurationObjectPart> _parts;
 
-        public override sealed bool TryGetPart(string objNamespace, string name, out ConfigurationObjectPart part) {
+        public override sealed bool TryGetPart(GetPartContext ctx, out ConfigurationObjectPart part) {
             var parts = _parts ?? this.GetParts();
-            var isOk = parts.TryGetValue(new PcakagePartKey(objNamespace, name), out part);
-            if (isOk) {
-                part.OpenData();
-            }
-
-            return isOk;
+            return parts.TryGetValue(ctx.Key.FullName, out part);
         }
     }
 }

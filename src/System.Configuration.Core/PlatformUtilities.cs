@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿namespace System.Configuration.Core {
 
-namespace System.Configuration.Core
-{
     internal abstract class PlatformUtilities {
         private static PlatformUtilities _current = new PlatformWinUtilities();
 

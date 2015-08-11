@@ -4,6 +4,19 @@
     /// 一种为调试时使用的仓库，他直接使用目录作为Repository，然后一级子目录作为Package。
     /// </summary>
     public class DcxmlRepository : Repository {
+
+        private static string _configurationXmlNamespace = "http://schemas.myerpsoft.com/configuration/2015";
+        /// <summary>
+        /// 返回缺省的配置系统命名空间。"http://schemas.myerpsoft.com/configuration/2015"
+        /// </summary>
+        public static string ConfigurationXmlNamespace {
+            get { return _configurationXmlNamespace; }
+            set {
+                _configurationXmlNamespace = value;
+                DcxmlFile.xNamespace = value;
+            }
+        }
+
         private string _path;
 
         public DcxmlRepository(string path)  {

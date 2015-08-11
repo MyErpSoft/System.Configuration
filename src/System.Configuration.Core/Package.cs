@@ -33,11 +33,10 @@
         /// <summary>
         /// 尝试获取指定命名空间和名称的部件
         /// </summary>
-        /// <param name="objNamespace">部件的命名空间</param>
-        /// <param name="name">部件的名称</param>
+        /// <param name="ctx">检索对象时的上下文数据</param>
         /// <param name="part">如果找到返回一个部件对象</param>
         /// <returns>如果找到返回true。</returns>
-        public abstract bool TryGetPart(string objNamespace, string name, out ConfigurationObjectPart part);
+        public abstract bool TryGetPart(GetPartContext ctx, out ConfigurationObjectPart part);
 
         public override string ToString() {
             return this.Name;

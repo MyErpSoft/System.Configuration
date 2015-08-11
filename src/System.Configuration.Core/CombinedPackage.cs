@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿namespace System.Configuration.Core {
 
-namespace System.Configuration.Core
-{
     internal class CombinedPackage : Package
     {
         //一组差量化的包，索引越小的其深度Depth越小，意味着在检索时优先级越低。
@@ -14,16 +9,16 @@ namespace System.Configuration.Core
             this._packages = packages;
         }
 
-        public override bool TryGetPart(string objNamespace, string name, out ConfigurationObjectPart part) {
-            CombinedPart first = null;
-            CombinedPart last = null;
+        public override bool TryGetPart(GetPartContext ctx, out ConfigurationObjectPart part) {
+            CombinedPart.Node first = null;
+            CombinedPart.Node last = null;
             Package package;
 
             //优先级越高的，排在前面。
             for (int i = _packages.Length - 1; i >= 0; i--) {
                 package = _packages[i];
-                if (package.TryGetPart(objNamespace, name, out part)) {
-                    last = new CombinedPart(part, last);
+                if (package.TryGetPart(ctx, out part)) {
+                    last = new CombinedPart.Node(part, last);
                     if (first == null) {
                         first = last;
                     }
@@ -32,7 +27,7 @@ namespace System.Configuration.Core
 
             //如果仅仅找到一个零件，没有必要输出CombinedPart，毕竟他的性能不如原生的对象(多一层调用)。
             if (first != null) {
-                part = (first.Next == null) ? first.Value : first;
+                part = (first.Next == null) ? first.Value : new CombinedPart(first);
             }
             else {
                 part = null;

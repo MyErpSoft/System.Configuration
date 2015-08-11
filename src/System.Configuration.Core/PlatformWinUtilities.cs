@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#if Windows
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace System.Configuration.Core {
 
@@ -16,3 +13,4 @@ namespace System.Configuration.Core {
         }
     }
 }
+#endif

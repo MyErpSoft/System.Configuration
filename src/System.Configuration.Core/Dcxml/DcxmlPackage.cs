@@ -10,7 +10,7 @@ namespace System.Configuration.Core.Dcxml {
             this._files = files;
         }
 
-        protected override IEnumerable<KeyValuePair<PcakagePartKey, ConfigurationObjectPart>> LoadPartsCore() {
+        protected override IEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>> LoadPartsCore() {
             foreach (var file in _files) {
                 var dcxmlFile = new DcxmlFile(file);
                 foreach (var part in dcxmlFile.LoadParts()) {
