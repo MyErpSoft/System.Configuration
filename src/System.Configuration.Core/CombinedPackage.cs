@@ -9,7 +9,7 @@
             this._packages = packages;
         }
 
-        public override bool TryGetPart(GetPartContext ctx, out ConfigurationObjectPart part) {
+        public override bool TryGetPart(FullName fullName, out ConfigurationObjectPart part) {
             CombinedPart.Node first = null;
             CombinedPart.Node last = null;
             Package package;
@@ -17,7 +17,7 @@
             //优先级越高的，排在前面。
             for (int i = _packages.Length - 1; i >= 0; i--) {
                 package = _packages[i];
-                if (package.TryGetPart(ctx, out part)) {
+                if (package.TryGetPart(fullName, out part)) {
                     last = new CombinedPart.Node(part, last);
                     if (first == null) {
                         first = last;

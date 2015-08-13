@@ -12,7 +12,7 @@ namespace System.Configuration.Core.Dcxml {
 
         protected override IEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>> LoadPartsCore() {
             foreach (var file in _files) {
-                var dcxmlFile = new DcxmlFile(file);
+                var dcxmlFile = new DcxmlFile(file, this);
                 foreach (var part in dcxmlFile.LoadParts()) {
                     yield return part;
                 }

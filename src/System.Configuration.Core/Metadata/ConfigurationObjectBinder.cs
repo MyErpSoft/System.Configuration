@@ -1,6 +1,4 @@
-﻿using System.Data.Metadata.DataEntities.Dynamic;
-
-namespace System.Configuration.Core {
+﻿namespace System.Configuration.Core.Metadata {
 
     /// <summary>
     /// 默认的配置对象绑定器。
@@ -8,18 +6,18 @@ namespace System.Configuration.Core {
     public class ConfigurationObjectBinder {
 
         public ConfigurationObjectBinder() {
-            this._cachedTypes = new ObjectContainer<ObjectTypeQualifiedName, DynamicEntityType>(this.LoadType);
+            this._cachedTypes = new ObjectContainer<ObjectTypeQualifiedName, IType>(this.LoadType);
         }
 
-        private readonly ObjectContainer<ObjectTypeQualifiedName, DynamicEntityType> _cachedTypes;
+        private readonly ObjectContainer<ObjectTypeQualifiedName, IType> _cachedTypes;
 
-        public DynamicEntityType BindToType(ObjectTypeQualifiedName name) {
+        public IType BindToType(ObjectTypeQualifiedName name) {
             //在缓存中寻找，
             return this._cachedTypes.GetValue(name);
         }
 
-        private DynamicEntityType LoadType(ObjectTypeQualifiedName name) {
-            DynamicEntityType result;
+        private IType LoadType(ObjectTypeQualifiedName name) {
+            IType result;
             if (!TryBindToTypeCore(name,out result)) {
                 Utilities.ThrowApplicationException("未能识别的配置对象类型，检查providerName是否正确");
                 result = null;
@@ -35,14 +33,14 @@ namespace System.Configuration.Core {
         /// <param name="name"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        protected virtual bool TryBindToTypeCore(ObjectTypeQualifiedName name, out DynamicEntityType type) {
+        protected virtual bool TryBindToTypeCore(ObjectTypeQualifiedName name, out IType type) {
             if (name == null) {
                 Utilities.ThrowArgumentNull(nameof(name));
             }
 
             if (string.IsNullOrEmpty(name.ProviderName) || name.ProviderName == ClrBinderProviderName) {
                 Type dt = Type.GetType(name.ToString(), true);
-                type = (DynamicEntityType)Activator.CreateInstance(dt);
+                type = (IType)Clr.ClrType.GetClrType(dt);
                 return true;
             }
 

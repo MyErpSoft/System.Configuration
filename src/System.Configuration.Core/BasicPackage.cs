@@ -34,6 +34,11 @@ namespace System.Configuration.Core {
                         Utilities.ThrowApplicationException(string.Format(CultureInfo.CurrentCulture,
                             "在同一个包配置文件 {0} 中出现重复的名称:{1}", this.Name, loadedParts.Current.Key));
                     }
+                    finally {
+                        if (loadedParts != null) {
+                            loadedParts.Dispose();
+                        }
+                    } 
 
                     this._parts = parts;
                 }
@@ -44,9 +49,9 @@ namespace System.Configuration.Core {
 
         private Dictionary<FullName, ConfigurationObjectPart> _parts;
 
-        public override sealed bool TryGetPart(GetPartContext ctx, out ConfigurationObjectPart part) {
+        public override sealed bool TryGetPart(FullName fullName, out ConfigurationObjectPart part) {
             var parts = _parts ?? this.GetParts();
-            return parts.TryGetValue(ctx.Key.FullName, out part);
+            return parts.TryGetValue(fullName, out part);
         }
     }
 }

@@ -120,4 +120,7 @@
   <data name="ErrorPackageName" xml:space="preserve">
     <value>packageName is error.</value>
   </data>
+  <data name="KeyNotFoundException" xml:space="preserve">
+    <value>在 {0} 中没有找到成员 {1}，或成员不符合需要的类型。</value>
+  </data>
 </root>

@@ -1,8 +1,10 @@
-﻿namespace System.Configuration.Core {
+﻿using System.Configuration.Core.Metadata;
 
-    public class GetPartContext {
+namespace System.Configuration.Core {
 
-        public GetPartContext(ConfigurationObjectBinder binder, QualifiedName key) {
+    public class OpenDataContext {
+
+        public OpenDataContext(ConfigurationObjectBinder binder, QualifiedName key) {
             this._binder = binder;
             this._key = key;
         }

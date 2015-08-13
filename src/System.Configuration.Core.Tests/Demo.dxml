@@ -1,15 +1,51 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  xmlns
+          描述下面所有子Element默认的类型，例如下面的Window没有标记命名空间，那他就是这个xmlns指明的命名空间；
+          系统通过此字符串确定Element最终被反序列化成什么类型。
+          此命名空间可以使用 clr-namespace: 开头，表示是使用CLR反射获取类型信息。如果不标注也是这样的方式。
+          如果使用其他的方式提供类型信息，可以使用 单词: 的形式，但对应的ConfigurationObjectBinder要重载支持。
+          
+          如果引用多个库或多个命名空间，可以使用类似下面xmlns:y这样的方式定义，以便引用其他组装件的类型。
+          
+  x:namespace
+          定义了本文件中所有配置对象的命名空间，Dcxml无法在同一个文件中定义多个命名空间，但二进制格式支持。
+          例如下面的frmMain完整的名称就是：company.erp.demo.frmMain
+          
+  x:using
+          描述当前dcxml将使用到的所有其他命名空间或库。
+          他由空格分隔多个项，而每个项又是由一个冒号分隔成两个部分，左边是缩写，遵循变量命名规范，例如：a b a1
+          右边代表的命名空间和包，如果是当前包，将省略包的描述，例如下面案例中的 a:company.erp
+          如果不是当前包，将描述完整的信息，例如：b:company.erp.crm,comany.erp.crm.demo.ui
+-->
 <x:ObjectContainer
                xmlns="clr-namespace:company.erp.demo.ui,company.erp.demo.ui"
                xmlns:x="http://schemas.myerpsoft.com/configuration/2015"
                xmlns:y="clr-namespace:myui,myui.test"
-               namespace="company.erp.demo" >
+               x:namespace="company.erp.demo" 
+               x:using="a:company.erp b:company.erp.crm,comany.erp.crm.demo.ui">
 
+  <!--
+  name  
+          配置对象的名称，必须符合命名规范，即只能是字母、数字和_，但不能以数字开头；
+          结合x:namespace得到完整的名称。
+          
+  base
+          如果配置对象继承自另外的配置对象，可以指定基类，这里是基类的指针。
+          如果仅包含一个单词，将在当前 命名空间 和当前 库中 检索，例如当前案例中是在 company.erp.demo.BasicForm,demo （假设当前案例包是demo）
+          
+          注意一个问题，在c#中，BasicForm如果在当前命名空间的上级是不必using说明的，c#会自动先在当前命名空间下匹配，如果没有找到将在上一级（company.erp）继续搜索
+          而我们配置系统没有这样实现，主要基于性能的考虑。以后有适当需求可以考虑添加（仅dcxml）。
+
+          如果包含 :(冒号)，那么表示使用其他的命名空间或库，例如
+          x:base="a:BasicForm"
+  -->
   <Window x:name="frmMain" x:base="BasicForm" >
-    <Text>demo</Text>
+    <Text sealed="true">demo</Text>
   </Window>
 
-  <y:MyButton x:name="btnOK">
+  
+  <y:MyButton x:name="btnOK" sealed="true">
     <Text>OK</Text>
   </y:MyButton>
 

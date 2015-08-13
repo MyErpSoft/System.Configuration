@@ -13,15 +13,20 @@ namespace System.Configuration.Core.Dcxml {
             this._data = data;
         }
         
-        protected override void OpenDataCore(GetPartContext ctx) {
+        protected override void OpenDataCore(OpenDataContext ctx) {
             var dt = ctx.Binder.BindToType(_typeName);
             foreach (var item in _data.Elements()) {
-                var field = dt.Fields[item.Name.LocalName];
+                var field = dt.GetProperty(item.Name.LocalName);
                 SetLocalValue(field, item.Value); //todo:字符串需要转换器转换成对应的值。
                 //todo: 如果是对象指针，要包装成指针对象。
             }
 
-            //todo:检索 x:base 设置，设置到Base属性中。
+            //检索 x:base 设置，设置到Base属性中。
+            var baseAttrbute = _data.Attribute(DcxmlFile.xNamespace + "base");
+            if (baseAttrbute != null) {
+                //如果未设置，代表没有设置策略。如果有设置，有可能是空
+                SetLocalValue(BasePropertyInstance, new ObjectPtr(_file.Usings.GetQualifiedName(baseAttrbute.Value)));
+            }
         }
     }
 }

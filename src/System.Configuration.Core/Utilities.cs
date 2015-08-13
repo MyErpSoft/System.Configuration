@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace System.Configuration.Core {
     
@@ -102,6 +103,10 @@ namespace System.Configuration.Core {
 
         internal static void ThrowApplicationException(string message) {
             throw new ApplicationException(message);
+        }
+
+        internal static void ThrowKeyNotFoundException(string message) {
+            throw new KeyNotFoundException(message);
         }
     }
 }

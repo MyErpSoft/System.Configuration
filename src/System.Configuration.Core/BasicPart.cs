@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Data.Metadata.DataEntities;
+using System.Configuration.Core.Metadata;
 
 namespace System.Configuration.Core {
 
     internal abstract class BasicPart : ConfigurationObjectPart {
 
         protected BasicPart() {
-            this._values = new Dictionary<IEntityProperty, object>();
+            this._values = new Dictionary<IProperty, object>();
         }
         
-        private Dictionary<IEntityProperty, object> _values;
+        private Dictionary<IProperty, object> _values;
 
         #region TryGetValue
         
@@ -19,17 +19,19 @@ namespace System.Configuration.Core {
         /// <param name="property">要检索的属性</param>
         /// <param name="value">如果检索到有效的定义将返回他，否则返回null</param>
         /// <returns>如果检索到有效的定义将返回true</returns>
-        public override bool TryGetLocaleValue(IEntityProperty property, out object value) {
+        public override bool TryGetLocaleValue(IProperty property, out object value) {
             return _values.TryGetValue(property, out value);
         }
 
-        protected void SetLocalValue(IEntityProperty property, object value) {
+        protected void SetLocalValue(IProperty property, object value) {
             _values[property] = value;
         }
 
-        protected void ResetLocalValue(IEntityProperty property) {
-
+        protected void ResetLocalValue(IProperty property) {
+            _values.Remove(property);
         }
+        
         #endregion
+
     }
 }

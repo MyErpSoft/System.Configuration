@@ -35,8 +35,23 @@
     <Compile Include="BasicPart.cs" />
     <Compile Include="CombinedPackage.cs" />
     <Compile Include="CombinedPart.cs" />
+    <Compile Include="ConfigurationEntityStorage.cs" />
     <Compile Include="ConfigurationObject.cs" />
-    <Compile Include="ConfigurationObjectBinder.cs" />
+    <Compile Include="Dcxml\UsingCollection.cs" />
+    <Compile Include="Metadata\Clr\ClrProperty.cs" />
+    <Compile Include="Metadata\Clr\ClrType.cs" />
+    <Compile Include="Metadata\Clr\MemberMetadataBase.cs" />
+    <Compile Include="Metadata\ConfigurationObjectBinder.cs" />
+    <Compile Include="Metadata\IConverter.cs" />
+    <Compile Include="Metadata\IProperty.cs" />
+    <Compile Include="Metadata\IType.cs" />
+    <Compile Include="Metadata\ReadOnlyKeyedCollection.cs" />
+    <Compile Include="ObjectPtr.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="QualifiedName.cs" />
     <Compile Include="ConfigurationObjectPart.cs" />
     <Compile Include="ConfigurationWorkspace.cs" />
@@ -45,7 +60,7 @@
     <Compile Include="Dcxml\DcxmlPart.cs" />
     <Compile Include="Dcxml\DcxmlRepository.cs" />
     <Compile Include="ObjectContainer.cs" />
-    <Compile Include="GetPartContext.cs" />
+    <Compile Include="OpenDataContext.cs" />
     <Compile Include="ObjectTypeQualifiedName.cs" />
     <Compile Include="Package.cs" />
     <Compile Include="FullName.cs" />
@@ -59,14 +74,14 @@
   <ItemGroup />
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Data.DataEntities">
-      <HintPath>..\..\..\System.Data\src\System.Data.DataEntities\bin\Debug\System.Data.DataEntities.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

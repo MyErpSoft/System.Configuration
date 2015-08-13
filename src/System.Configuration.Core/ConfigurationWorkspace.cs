@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Configuration.Core.Metadata;
 
 namespace System.Configuration.Core {
 
@@ -20,7 +20,7 @@ namespace System.Configuration.Core {
                 Utilities.ThrowArgumentNull(nameof(binder));
             }
 
-            this._objectContainer = new ObjectContainer<QualifiedName, ConfigurationObject>(this.LoadObject);
+            this._objectContainer = new ObjectContainer<QualifiedName, object>(this.LoadObject);
             this._repository = repository;
             this._binder = binder;
         }
@@ -41,13 +41,13 @@ namespace System.Configuration.Core {
             get { return _binder; }
         }
 
-        private readonly ObjectContainer<QualifiedName, ConfigurationObject> _objectContainer;
+        private readonly ObjectContainer<QualifiedName, object> _objectContainer;
         /// <summary>
         /// 检索一个指定键的对象，如果对象尚未创建将自动创建一个，容器保证同一个key返回相同的实例。
         /// </summary>
         /// <param name="key">要查询的对象标识</param>
         /// <returns>此键关联的一个对象</returns>
-        public ConfigurationObject GetObject(QualifiedName key) {
+        public object GetObject(QualifiedName key) {
             if (key == null) {
                 Utilities.ThrowArgumentNull(nameof(key));
             }
@@ -57,24 +57,33 @@ namespace System.Configuration.Core {
             return this._objectContainer.GetValue(key);
         }
 
-        private ConfigurationObject LoadObject(QualifiedName key) {
+        private object LoadObject(QualifiedName key) {
             //从仓库获取Package，当出现多个包时仓库会包装成一个虚拟的包
             var package = this._repository.GetPackage(key.PackageName);
 
             //从Package中检索此key对应的配置数据
             ConfigurationObjectPart part;
-            var ctx = new GetPartContext(this._binder, key);
-            if (package.TryGetPart(ctx, out part)) {
+            if (package.TryGetPart(key.FullName, out part)) {
                 Utilities.ThrowApplicationException(string.Format(Globalization.CultureInfo.CurrentCulture,
                     "未能找到指定的配置对象：{0}", key));
             }
 
             //解开数据
+            var ctx = new OpenDataContext(this._binder, key);
             part.OpenData(ctx);
 
+            return CreateObject(key, part);
+        }
+
+        /// <summary>
+        /// 允许派生类重载此方法，创建自己的配置对象。
+        /// </summary>
+        /// <param name="key">要创建对象的键。</param>
+        /// <param name="part">关联的部件。</param>
+        /// <returns>一个新的配置对象。</returns>
+        protected virtual object CreateObject(QualifiedName key, ConfigurationObjectPart part) {
             //组装成新的配置对象。
             return new ConfigurationObject(part);
         }
-
     }
 }
