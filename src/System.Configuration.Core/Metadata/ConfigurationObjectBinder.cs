@@ -9,6 +9,7 @@
             this._cachedTypes = new ObjectContainer<ObjectTypeQualifiedName, IType>(this.LoadType);
         }
 
+        #region BindToType
         private readonly ObjectContainer<ObjectTypeQualifiedName, IType> _cachedTypes;
 
         public IType BindToType(ObjectTypeQualifiedName name) {
@@ -18,7 +19,7 @@
 
         private IType LoadType(ObjectTypeQualifiedName name) {
             IType result;
-            if (!TryBindToTypeCore(name,out result)) {
+            if (!TryBindToTypeCore(name, out result)) {
                 Utilities.ThrowApplicationException("未能识别的配置对象类型，检查providerName是否正确");
                 result = null;
             }
@@ -47,5 +48,19 @@
             type = null;
             return false;
         }
+        #endregion
+
+        #region 创建配置对象
+        /// <summary>
+        /// 允许派生类重载此方法，创建自己的配置对象。
+        /// </summary>
+        /// <param name="key">要创建对象的键。</param>
+        /// <param name="part">关联的部件。</param>
+        /// <returns>一个新的配置对象。</returns>
+        public virtual object CreateObject(QualifiedName key, ConfigurationObjectPart part) {
+            //组装成新的配置对象。
+            return new ConfigurationObject(part);
+        }
+        #endregion
     }
 }

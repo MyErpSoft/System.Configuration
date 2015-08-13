@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#if Unix
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace System.Configuration.Core {
 
@@ -14,5 +11,10 @@ namespace System.Configuration.Core {
         public override string[] GetFiles(string path,string searchPattern, bool topDirectoryOnly) {
             return Directory.GetFiles(path, searchPattern, topDirectoryOnly ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
         }
+
+        public override Stream Open(string path, FileMode mode, FileAccess access, FileShare share) {
+            throw new NotImplementedException();
+        }
     }
 }
+#endif

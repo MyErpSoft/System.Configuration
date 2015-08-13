@@ -11,6 +11,13 @@ namespace System.Configuration.Core {
         /// 创建工作区实例，他用于创建具体的配置对象。
         /// </summary>
         /// <param name="repository">此工作区工作时依赖的仓库。</param>
+        public ConfigurationWorkspace(Repository repository) : this(repository, new ConfigurationObjectBinder()) {
+        }
+
+        /// <summary>
+        /// 创建工作区实例，他用于创建具体的配置对象。
+        /// </summary>
+        /// <param name="repository">此工作区工作时依赖的仓库。</param>
         /// <param name="binder">类型绑定器，用于将配置部件转换为配置的动态实体。</param>
         public ConfigurationWorkspace(Repository repository,ConfigurationObjectBinder binder) {
             if (repository == null) {
@@ -48,7 +55,7 @@ namespace System.Configuration.Core {
         /// <param name="key">要查询的对象标识</param>
         /// <returns>此键关联的一个对象</returns>
         public object GetObject(QualifiedName key) {
-            if (key == null) {
+            if (null == key) {
                 Utilities.ThrowArgumentNull(nameof(key));
             }
 
@@ -63,7 +70,7 @@ namespace System.Configuration.Core {
 
             //从Package中检索此key对应的配置数据
             ConfigurationObjectPart part;
-            if (package.TryGetPart(key.FullName, out part)) {
+            if (!package.TryGetPart(key.FullName, out part)) {
                 Utilities.ThrowApplicationException(string.Format(Globalization.CultureInfo.CurrentCulture,
                     "未能找到指定的配置对象：{0}", key));
             }
@@ -72,18 +79,7 @@ namespace System.Configuration.Core {
             var ctx = new OpenDataContext(this._binder, key);
             part.OpenData(ctx);
 
-            return CreateObject(key, part);
-        }
-
-        /// <summary>
-        /// 允许派生类重载此方法，创建自己的配置对象。
-        /// </summary>
-        /// <param name="key">要创建对象的键。</param>
-        /// <param name="part">关联的部件。</param>
-        /// <returns>一个新的配置对象。</returns>
-        protected virtual object CreateObject(QualifiedName key, ConfigurationObjectPart part) {
-            //组装成新的配置对象。
-            return new ConfigurationObject(part);
+            return _binder.CreateObject(key, part);
         }
     }
 }

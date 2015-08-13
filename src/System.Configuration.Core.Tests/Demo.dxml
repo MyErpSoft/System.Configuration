@@ -41,7 +41,7 @@
           x:base="a:BasicForm"
   -->
   <Window x:name="frmMain" x:base="BasicForm" >
-    <Text sealed="true">demo</Text>
+    <Text x:sealed="true">demo</Text>
   </Window>
 
   

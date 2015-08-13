@@ -72,22 +72,23 @@ namespace System.Configuration.Core.Dcxml {
 
             //使用xdocument模型实现的好处是代码容易写，但是存在XElement无法释放的问题，
             //等成熟后使用reader
+            using (var stream = PlatformUtilities.Current.Open(_fileName, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read)) {
+                XDocument doc = XDocument.Load(stream, LoadOptions.SetLineInfo);
+                var root = doc.Root;
+                if (root != null) {
+                    _namespace = GetNamespace(root);
+                    _usings = new UsingCollection(root.Attribute(xNamespace + "using") ? .Value, this);
 
-            XDocument doc = XDocument.Load(this._fileName);
-            var root = doc.Root;
-            if (root != null) {
-                _namespace = GetNamespace(root);
-                _usings = new UsingCollection(root.Attribute(xNamespace + "using").Value, this);
+                    foreach (var item in root.Elements()) {
+                        if (item.NodeType == XmlNodeType.Element) {
+                            var name = string.Intern(item.Attribute(xNamespace + "name").Value);
+                            var objTypeName = GetTypeName(item.Name);
 
-                foreach (var item in root.Elements()) {
-                    if (item.NodeType == XmlNodeType.Element) {
-                        var name = string.Intern(item.Attribute(xNamespace + "name").Value);
-                        var objTypeName = GetTypeName(item.Name);
-
-                        yield return new KeyValuePair<FullName, ConfigurationObjectPart>(
-                                new FullName(_namespace, name),
-                                new DcxmlPart(this, objTypeName, item)
-                                );
+                            yield return new KeyValuePair<FullName, ConfigurationObjectPart>(
+                                    new FullName(_namespace, name),
+                                    new DcxmlPart(this, objTypeName, item)
+                                    );
+                        }
                     }
                 }
             }
@@ -125,7 +126,7 @@ namespace System.Configuration.Core.Dcxml {
 
             var xmlNamespace = name.Namespace;
             ObjectTypeQualifiedName typeNameWithoutName;
-            if (_typePackages.TryGetValue(xmlNamespace, out typeNameWithoutName)) {
+            if (!_typePackages.TryGetValue(xmlNamespace, out typeNameWithoutName)) {
                 typeNameWithoutName = ObjectTypeQualifiedName.CreateWithoutName(xmlNamespace.NamespaceName);
                 _typePackages.Add(xmlNamespace, typeNameWithoutName);
             }

@@ -14,11 +14,15 @@ namespace System.Configuration.Core {
 
 
         public Repository(Repository[] dependencies) {
-            if (dependencies == null) {
-                dependencies = new Repository[0];
+            if (dependencies == null || dependencies.Length == 0) {
+                this._dependencies = _emptyRepositories;
+                this._allRepositories = null;
             }
-            this._dependencies = new ReadOnlyCollection<Repository>(dependencies);
-            this._allRepositories = GetAllRepositories(this);
+            else {
+                this._dependencies = new ReadOnlyCollection<Repository>(dependencies);
+                this._allRepositories = GetAllRepositories(this);
+            }
+
             this._loadedPackages = new ObjectContainer<string, Package>(this.LoadPackage);
         }
 
@@ -35,6 +39,8 @@ namespace System.Configuration.Core {
                 return _depth.Value;
             }
         }
+
+        private static readonly ReadOnlyCollection<Repository> _emptyRepositories = new ReadOnlyCollection<Repository>(new Repository[0]);
 
         //仓库的依赖性被设计成只读，且只能构造传入后就不能再变更了，主要考虑：
         //1、在实际运行时，变更依赖性会遇到很多不确定性的问题；
@@ -95,36 +101,44 @@ namespace System.Configuration.Core {
                 Utilities.ThrowArgumentException("packageName只能包含字母、数字或_，且不能使用数字开头。", nameof(packageName));
             }
 
-            Package firstPackage = null;
-            List<Package> list = null;
             Package result;
 
-            foreach (var item in _allRepositories) {
-                if (item.TryGetPackageCore(packageName,out result)) {
-
-                    //通常情况下，没有差量包，所以我们就避免创建List<Package>对象，可以直接返回唯一的包。
-                    if (firstPackage == null) {
-                        firstPackage = result;
-                    }
-                    else {
-                        //如果存在差量包，就放在一起。
-                        if (list == null) {
-                            list = new List<Package>(2) { firstPackage, result };
-                        }
-                        else {
-                            list.Add(result);
-                        }
-                    }
+            if (_allRepositories == null) {
+                if (this.TryGetPackageCore(packageName, out result)) {
+                    return result;
                 }
             }
+            else {
+                Package firstPackage = null;
+                List<Package> list = null;
 
-            //由于允许多个仓库包含同一个名称的包，他们之间是差量的关系，我们会包装成一个虚拟的包。
-            //大多数情况下是没有差量的包，所以每次总是foreach一个数组，而这个数组只有一个记录，对于计算次数极其多的方法是不合算的。
-            if (list != null) {
-                return new CombinedPackage(list.ToArray());
-            }
-            else if (firstPackage != null) {
-                return firstPackage;
+                foreach (var item in _allRepositories) {
+                    if (item.TryGetPackageCore(packageName, out result)) {
+
+                        //通常情况下，没有差量包，所以我们就避免创建List<Package>对象，可以直接返回唯一的包。
+                        if (firstPackage == null) {
+                            firstPackage = result;
+                        }
+                        else {
+                            //如果存在差量包，就放在一起。
+                            if (list == null) {
+                                list = new List<Package>(2) { firstPackage, result };
+                            }
+                            else {
+                                list.Add(result);
+                            }
+                        }
+                    }
+
+                    //由于允许多个仓库包含同一个名称的包，他们之间是差量的关系，我们会包装成一个虚拟的包。
+                    //大多数情况下是没有差量的包，所以每次总是foreach一个数组，而这个数组只有一个记录，对于计算次数极其多的方法是不合算的。
+                    if (list != null) {
+                        return new CombinedPackage(list.ToArray());
+                    }
+                    else if (firstPackage != null) {
+                        return firstPackage;
+                    }
+                }
             }
 
             Utilities.ThrowApplicationException(string.Format(Globalization.CultureInfo.CurrentCulture,

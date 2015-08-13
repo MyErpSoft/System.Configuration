@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<directory name="root">
+  
+  <directory name="testPackage">
+    <file name="Test1.dcxml" />
+  </directory>
+  
+</directory>

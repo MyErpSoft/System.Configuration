@@ -58,7 +58,7 @@
 
         protected virtual string[] GetFiles(string packagePath) {
             //尝试获取此路径下所有*.dcxml文件，包括子目录
-            return PlatformUtilities.Current.GetFiles(this._path, "*.dcxml", true);
+            return PlatformUtilities.Current.GetFiles(packagePath, "*.dcxml", true);
         }
         
         /// <summary>

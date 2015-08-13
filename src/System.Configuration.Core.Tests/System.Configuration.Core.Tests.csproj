@@ -6,8 +6,8 @@
     <ProjectGuid>{B9E8CD89-3724-49B9-8C75-713645BCBB35}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>System.Configuration.CoreTests</RootNamespace>
-    <AssemblyName>System.Configuration.CoreTests</AssemblyName>
+    <RootNamespace>System.Configuration.Core.Tests</RootNamespace>
+    <AssemblyName>System.Configuration.Core.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -37,6 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -51,10 +52,25 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="PlatformTestUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestDirectory.cs" />
+    <Compile Include="BasicTest.cs" />
+    <Compile Include="TestClasses.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Demo.dxml" />
+    <EmbeddedResource Include="Files\Test1.dcxml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Files\G1.xml" />
+    <EmbeddedResource Include="Files\G2.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\System.Configuration.Core\System.Configuration.Core.csproj">
+      <Project>{e67dd4b7-a39d-42ee-b33f-7a534f0697de}</Project>
+      <Name>System.Configuration.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

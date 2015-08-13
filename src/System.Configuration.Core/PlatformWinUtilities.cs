@@ -11,6 +11,10 @@ namespace System.Configuration.Core {
         public override string[] GetFiles(string path,string searchPattern, bool topDirectoryOnly) {
             return Directory.GetFiles(path, searchPattern, topDirectoryOnly ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
         }
+
+        public override Stream Open(string path, FileMode mode, FileAccess access, FileShare share) {
+            return File.Open(path, mode, access, share);
+        }
     }
 }
 #endif

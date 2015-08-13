@@ -13,7 +13,7 @@ namespace System.Configuration.Core.Dcxml {
     internal sealed class UsingCollection {
         //从前缀检索对应的完整信息。
         private Dictionary<string, QualifiedName> _leftToRight;
-        private Dictionary<string, string> _rightToLeft;
+       // private Dictionary<string, string> _rightToLeft;
         private DcxmlFile _file;
         
         public UsingCollection(string init,DcxmlFile file) {

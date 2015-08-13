@@ -1,0 +1,19 @@
+﻿<Directory name="root">
+  <File name="" />
+  
+  <Directory name="demo.erp.framework">
+    
+  </Directory>
+
+  <Directory name="demo.erp.common">
+
+  </Directory>
+
+  <Directory name="demo.erp.hr">
+
+  </Directory>
+
+  <Directory name="demo.erp.crm">
+
+  </Directory>
+</Directory>
