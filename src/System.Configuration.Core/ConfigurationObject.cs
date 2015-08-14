@@ -68,7 +68,7 @@ namespace System.Configuration.Core {
                     }
 
                     lock (this) {
-                        if (_base != null) {
+                        if (baseName != null) {
                             _base = _workspace.GetConfigurationObject(baseName);
                         }
                     }
