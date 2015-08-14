@@ -37,8 +37,21 @@ namespace System.Configuration.Core {
         protected static IProperty BasePropertyInstance = new BaseProperty();
         #endregion
 
+        #region TypeInfo
+        /// <summary>
+        /// 返回当前部件对应的类型
+        /// </summary>
+        public abstract IType Type {
+            get;
+        }
+        #endregion
+
         #region BaseProperty
         private sealed class BaseProperty : IProperty {
+            public object DefaultValue {
+                get { return null; }
+            }
+
             public bool IsReadOnly {
                 get { return true; }
             }
@@ -46,7 +59,6 @@ namespace System.Configuration.Core {
             public string Name {
                 get { return "__Base__"; }
             }
-
         }
         #endregion
 
@@ -67,7 +79,7 @@ namespace System.Configuration.Core {
         /// <summary>
         /// 返回此对象是否已经完成解开数据包工作。
         /// </summary>
-        protected bool IsOpened {
+        internal bool IsOpened {
             get {
                 return this._isOpened;
             }

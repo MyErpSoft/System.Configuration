@@ -4,9 +4,11 @@ using System.Configuration.Core.Metadata;
 namespace System.Configuration.Core {
 
     internal abstract class BasicPart : ConfigurationObjectPart {
+        private ObjectTypeQualifiedName _typeName;
 
-        protected BasicPart() {
-            this._values = new Dictionary<IProperty, object>();
+        protected BasicPart(ObjectTypeQualifiedName typeName) {
+            this._typeName = typeName;
+            this._values = new Dictionary<IProperty, object>(ReferenceEqualityComparer<IProperty>.Default);
         }
         
         private Dictionary<IProperty, object> _values;
@@ -30,8 +32,33 @@ namespace System.Configuration.Core {
         protected void ResetLocalValue(IProperty property) {
             _values.Remove(property);
         }
-        
+
         #endregion
 
+        #region TypeInfo
+
+        private IType _type;
+        /// <summary>
+        /// 返回当前对象的类型信息。
+        /// </summary>
+        public override IType Type {
+            get { return _type; }
+        }
+        #endregion
+
+        #region OpenData
+        protected override void OpenDataCore(OpenDataContext ctx) {
+            if (ctx.Type != null) {
+                this._type = ctx.Type;
+            }
+            else {
+                if ((object)this._typeName != null) {
+                    this._type = ctx.Binder.BindToType(_typeName);
+                    ctx.Type = this._type;
+                }
+            }
+        }
+        #endregion
+        
     }
 }

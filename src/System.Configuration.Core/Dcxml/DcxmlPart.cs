@@ -4,17 +4,17 @@ namespace System.Configuration.Core.Dcxml {
 
     internal class DcxmlPart : BasicPart {
         private XElement _data;
-        private ObjectTypeQualifiedName _typeName;
         private DcxmlFile _file;
 
-        public DcxmlPart(DcxmlFile file, ObjectTypeQualifiedName typeName, XElement data) {
+        public DcxmlPart(DcxmlFile file, ObjectTypeQualifiedName typeName, XElement data):base(typeName) {
             this._file = file;
-            this._typeName = typeName;
             this._data = data;
         }
         
         protected override void OpenDataCore(OpenDataContext ctx) {
-            var dt = ctx.Binder.BindToType(_typeName);
+            base.OpenDataCore(ctx);
+            var dt = this.Type;
+
             foreach (var item in _data.Elements()) {
                 var field = dt.GetProperty(item.Name.LocalName);
                 SetLocalValue(field, item.Value); //todo:字符串需要转换器转换成对应的值。

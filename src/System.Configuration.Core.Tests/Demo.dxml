@@ -45,7 +45,7 @@
   </Window>
 
   
-  <y:MyButton x:name="btnOK" sealed="true">
+  <y:MyButton x:name="btnOK" x:sealed="true">
     <Text>OK</Text>
   </y:MyButton>
 

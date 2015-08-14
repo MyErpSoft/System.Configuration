@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<x:ObjectContainer
+               xmlns="clr-namespace:System.Configuration.Core.Tests,System.Configuration.Core.Tests"
+               xmlns:x="http://schemas.myerpsoft.com/configuration/2015"
+               x:namespace="company.erp.demo">
+
+  <Window x:name="f1" >
+    <Text>demo1</Text>
+  </Window>
+
+  <Window x:name="f3" >
+    <Text>demo3</Text>
+  </Window>
+  
+</x:ObjectContainer>

@@ -147,7 +147,7 @@ namespace System.Configuration.Core.Dcxml {
                            "不正确的对象指针描述，其名称包含不准确的字符或空。", _file.FileName, value));
             }
 
-            if (checkName && !Utilities.VerifyNameWithNamespace(packageName)) {
+            if (checkPackageName && !Utilities.VerifyNameWithNamespace(packageName)) {
                 Utilities.ThrowApplicationException(string.Format(CultureInfo.CurrentCulture,
                            "不正确的对象指针描述，包描述包含不准确的字符或空。", _file.FileName, value));
             }

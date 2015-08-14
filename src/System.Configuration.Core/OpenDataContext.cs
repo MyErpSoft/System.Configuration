@@ -2,6 +2,9 @@
 
 namespace System.Configuration.Core {
 
+    /// <summary>
+    /// 为打开数据提供上下文数据。
+    /// </summary>
     public class OpenDataContext {
 
         public OpenDataContext(ConfigurationObjectBinder binder, QualifiedName key) {
@@ -24,5 +27,13 @@ namespace System.Configuration.Core {
             get { return _key; }
         }
 
+        private IType _type;
+        /// <summary>
+        /// 返回/设置当前对象的类型信息。
+        /// </summary>
+        public IType Type {
+            get { return _type; }
+            set { _type = value; }
+        }
     }
 }

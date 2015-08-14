@@ -4,6 +4,15 @@
     /// 一种为调试时使用的仓库，他直接使用目录作为Repository，然后一级子目录作为Package。
     /// </summary>
     public class DcxmlRepository : Repository {
+        public DcxmlRepository(string path) : this(path, null) {
+        }
+
+        public DcxmlRepository(string path, params Repository[] dependencies) : base(dependencies) {
+            if (string.IsNullOrEmpty(path)) {
+                Utilities.ThrowArgumentNull(nameof(path));
+            }
+            this._path = path;
+        }
 
         private static string _configurationXmlNamespace = "http://schemas.myerpsoft.com/configuration/2015";
         /// <summary>
@@ -18,14 +27,6 @@
         }
 
         private string _path;
-
-        public DcxmlRepository(string path)  {
-            if (string.IsNullOrEmpty(path)) {
-                Utilities.ThrowArgumentNull(nameof(path));
-            }
-            this._path = path;
-        }
-
         /// <summary>
         /// 返回仓库所在的路径。
         /// </summary>
@@ -60,7 +61,7 @@
             //尝试获取此路径下所有*.dcxml文件，包括子目录
             return PlatformUtilities.Current.GetFiles(packagePath, "*.dcxml", true);
         }
-        
+
         /// <summary>
         /// 返回一个包对应的路径
         /// </summary>
@@ -68,6 +69,14 @@
         /// <returns>一个地址，指向了包所在的位置。</returns>
         protected virtual string GetPackagePath(string packageName) {
             return PlatformUtilities.Current.CombinePath(this._path, packageName);
-        } 
+        }
+
+        /// <summary>
+        /// 返回调试时需要的信息，包括库所在的路径
+        /// </summary>
+        /// <returns>一个描述字符串。</returns>
+        public override string ToString() {
+            return "DcxmlRepository:" + this._path;
+        }
     }
 }

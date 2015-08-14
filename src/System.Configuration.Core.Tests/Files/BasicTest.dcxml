@@ -5,7 +5,7 @@
                x:namespace="company.erp.demo">
 
   <Window x:name="frmMain" >
-    <Text>demo</Text>
+    <Text>Hello, World!</Text>
   </Window>
 
 </x:ObjectContainer>

@@ -9,14 +9,15 @@ namespace System.Configuration.Core.Tests {
 
         [TestInitialize]
         public void Init() {
-            PlatformUtilities.Current = new PlatformTestUtilities(TestDirectory.Create("G1.xml"));
+            PlatformUtilities.Current = new PlatformTestUtilities(TestDirectory.Create("BasicTest.xml"));
         }
 
         [TestMethod]
         public void TestGetValue() {
             DcxmlRepository rep = new DcxmlRepository("root");
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
-            wp.GetObject(new QualifiedName("company.erp.demo", "frmMain", "testPackage"));
+            Window win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "frmMain", "testPackage"));
+            Assert.AreEqual<string>("Hello, World!", win.Text);
         }
     }
 }

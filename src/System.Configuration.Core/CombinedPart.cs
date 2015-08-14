@@ -22,18 +22,18 @@ namespace System.Configuration.Core {
         }
         #endregion
 
-        internal CombinedPart(CombinedPart.Node first) {
+        internal CombinedPart(Node first) {
             Debug.Assert(first != null);
             this._first = first;
         }
 
-        private CombinedPart.Node _first;
+        private Node _first;
 
         protected override void OpenDataCore(OpenDataContext ctx) {
             var current = _first;
             do {
                 current.Value.OpenData(ctx);//可能已经被其他workspace解包了，所以调用OpenData而不是OpenDataCore
-                current = current.Next;
+                current = current.Next;                
             } while (current != null);
         }
         
@@ -47,6 +47,12 @@ namespace System.Configuration.Core {
             } while (current != null);
 
             return false;
+        }
+
+        public override IType Type {
+            get {
+                return _first.Value.Type;
+            }
         }
     }
 }

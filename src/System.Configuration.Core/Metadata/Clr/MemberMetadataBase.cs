@@ -2,7 +2,7 @@
 
 namespace System.Configuration.Core.Metadata.Clr {
 
-    internal abstract class MemberMetadataBase<T> where T : MemberInfo {
+    public abstract class MemberMetadataBase<T> where T : MemberInfo {
         /// <summary>
         /// Return CLR member.
         /// </summary>

@@ -68,6 +68,7 @@
     <Compile Include="PlatformUnixUtilities.cs" />
     <Compile Include="PlatformUtilities.cs" />
     <Compile Include="PlatformWinUtilities.cs" />
+    <Compile Include="ReferenceEqualityComparer.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="RepositoryCollection.cs" />
     <Compile Include="Utilities.cs" />

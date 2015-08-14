@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace System.Configuration.Core.Metadata.Clr {
 
-    internal class ClrType : MemberMetadataBase<Type>, IType {
+    public class ClrType : MemberMetadataBase<Type>, IType {
 
         #region ClrType
 
@@ -129,6 +129,10 @@ namespace System.Configuration.Core.Metadata.Clr {
 
         IProperty IType.GetProperty(string name) {
             return this.GetProperty(name);
+        }
+
+        internal Type MappingType {
+            get { return this.ClrMapping; }
         }
 
         private sealed class PropertyCollection : ReadOnlyKeyedCollection<string, ClrProperty> {

@@ -1,4 +1,6 @@
-﻿namespace System.Configuration.Core.Metadata {
+﻿using System.Configuration.Core.Metadata.Clr;
+
+namespace System.Configuration.Core.Metadata {
 
     /// <summary>
     /// 默认的配置对象绑定器。
@@ -54,12 +56,17 @@
         /// <summary>
         /// 允许派生类重载此方法，创建自己的配置对象。
         /// </summary>
-        /// <param name="key">要创建对象的键。</param>
-        /// <param name="part">关联的部件。</param>
+        /// <param name="data">关联的配置对象。</param>
         /// <returns>一个新的配置对象。</returns>
-        public virtual object CreateObject(QualifiedName key, ConfigurationObjectPart part) {
-            //组装成新的配置对象。
-            return new ConfigurationObject(part);
+        public virtual object CreateObject(ConfigurationObject data) {
+            ClrType clrType = data.Part.Type as ClrType;
+            if (clrType != null) {
+                //组装成新的配置对象。
+                return Activator.CreateInstance(clrType.MappingType, data);
+            }
+
+            Utilities.ThrowNotSupported("重载此方法用于支持新类型的创建。");
+            return true;
         }
         #endregion
     }
