@@ -47,7 +47,9 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
@@ -59,6 +61,7 @@
     <Compile Include="TestDirectory.cs" />
     <Compile Include="BasicTest.cs" />
     <Compile Include="TestClasses.cs" />
+    <Compile Include="ConverterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Demo.dxml" />
@@ -66,6 +69,7 @@
     <EmbeddedResource Include="Files\DiffTest_2.dcxml" />
     <EmbeddedResource Include="Files\DiffTest_1.dcxml" />
     <EmbeddedResource Include="Files\InheritTest_1.dcxml" />
+    <EmbeddedResource Include="Files\ConverterTest.dcxml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Files\BasicTest.xml" />
@@ -79,6 +83,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Files\InheritTest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Files\ConverterTest.xml" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

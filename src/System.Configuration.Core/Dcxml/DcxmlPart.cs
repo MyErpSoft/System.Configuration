@@ -17,8 +17,17 @@ namespace System.Configuration.Core.Dcxml {
 
             foreach (var item in _data.Elements()) {
                 var field = dt.GetProperty(item.Name.LocalName);
-                SetLocalValue(field, item.Value); //todo:字符串需要转换器转换成对应的值。
-                //todo: 如果是对象指针，要包装成指针对象。
+                //空节点
+                if (item.IsEmpty) {
+                    SetLocalValue(field, field.DefaultValue);
+                }
+                else {
+                    //todo: 如果是对象指针，要包装成指针对象。
+
+                    //字符串需要转换器转换成对应的值。
+                    var value = field.PropertyType.GetConverter().ConvertFromInvariantString(item.Value);
+                    SetLocalValue(field, value); 
+                }
             }
 
             //检索 x:base 设置，设置到Base属性中。

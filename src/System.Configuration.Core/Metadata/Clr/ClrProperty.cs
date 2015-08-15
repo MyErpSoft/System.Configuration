@@ -20,5 +20,15 @@ namespace System.Configuration.Core.Metadata.Clr {
             get { return _defaultValue; }
         }
 
+        private IType _propertyType;
+        public IType PropertyType {
+            get {
+                if (_propertyType == null) {
+                    _propertyType = ClrType.GetClrType(this.ClrMapping.PropertyType);
+                }
+
+                return this._propertyType;
+            }
+        }
     }
 }

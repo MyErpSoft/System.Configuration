@@ -59,6 +59,10 @@ namespace System.Configuration.Core {
             public string Name {
                 get { return "__Base__"; }
             }
+
+            public IType PropertyType {
+                get { return null; }
+            }
         }
         #endregion
 

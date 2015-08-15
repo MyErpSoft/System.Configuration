@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 
@@ -125,6 +126,19 @@ namespace System.Configuration.Core.Metadata.Clr {
             else {
                 throw new NotSupportedException();
             }
+        }
+
+        private TypeConverter _converter;
+        /// <summary>
+        /// 获取此类型的转换器，用于字符串到此类型的互相转换。
+        /// </summary>
+        /// <returns>一个转换器实例。</returns>
+        public TypeConverter GetConverter() {
+            if (_converter == null) {
+                _converter = TypeDescriptor.GetConverter(this.ClrMapping);
+            }
+
+            return _converter;
         }
 
         IProperty IType.GetProperty(string name) {
