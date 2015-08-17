@@ -15,11 +15,19 @@ namespace System.Configuration.Core.Tests {
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
 
             //string
-            Control btnOK = (Control)wp.GetObject(new QualifiedName("company.erp.demo", "btnOK", "testPackage"));
-            Assert.AreEqual<string>("OK", btnOK.Text);
+            Button btnOK = (Button)wp.GetObject(new QualifiedName("company.erp.demo", "btnOK", "testPackage"));
+            Assert.AreEqual("OK", btnOK.Text);
 
             //bool
-            Assert.AreEqual<bool>(true, btnOK.Enabled);
+            Assert.AreEqual(true, btnOK.Enabled);
+
+            //Bottom
+            Assert.AreEqual(AnchorStyles.Right | AnchorStyles.Bottom, btnOK.Anchor);
+
+            //Reference
+            var refValue = btnOK.BackgroundImage;
+            Image imgSky = (Image)wp.GetObject(new QualifiedName("company.erp.demo", "imgSky", "testPackage"));
+            Assert.AreEqual(imgSky, refValue);
         }
     }
 }

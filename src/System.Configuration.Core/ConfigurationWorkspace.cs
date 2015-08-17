@@ -57,7 +57,7 @@ namespace System.Configuration.Core {
         /// <returns>此键关联的一个配置对象</returns>
         public ConfigurationObject GetConfigurationObject(QualifiedName key) {
             if ((object)key == null) {
-                Utilities.ThrowArgumentNull(nameof(key));
+                return null;
             }
 
             //尝试在ObjectContainer检查是否存在缓存，如果有直接返回，否则ObjectContainer的回调将
@@ -72,7 +72,7 @@ namespace System.Configuration.Core {
         /// <returns>此键关联的一个CLR对象</returns>
         public object GetObject(QualifiedName key) {
             if ((object)key == null) {
-                Utilities.ThrowArgumentNull(nameof(key));
+                return null;
             }
 
             return this._objectContainer.GetValue(key).GetClrObject(this);

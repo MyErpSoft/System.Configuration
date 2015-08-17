@@ -17,24 +17,29 @@ namespace System.Configuration.Core.Dcxml {
 
             foreach (var item in _data.Elements()) {
                 var field = dt.GetProperty(item.Name.LocalName);
-                //空节点
-                if (item.IsEmpty) {
-                    SetLocalValue(field, field.DefaultValue);
+                //如果是对象指针，要包装成指针对象。
+                var refAttribute = item.Attribute(DcxmlRepository.DcxmlName_Ref);
+                if (refAttribute != null) {
+                    SetLocalValue(field, new ObjectPtr(_file.Usings.GetQualifiedName(refAttribute.Value)));
                 }
                 else {
-                    //todo: 如果是对象指针，要包装成指针对象。
-
-                    //字符串需要转换器转换成对应的值。
-                    var value = field.PropertyType.GetConverter().ConvertFromInvariantString(item.Value);
-                    SetLocalValue(field, value); 
+                    //空节点
+                    if (item.IsEmpty) {
+                        SetLocalValue(field, field.DefaultValue);
+                    }
+                    else {
+                        //字符串需要转换器转换成对应的值。
+                        var value = field.PropertyType.GetConverter().ConvertFromInvariantString(item.Value);
+                        SetLocalValue(field, value);
+                    }
                 }
             }
 
             //检索 x:base 设置，设置到Base属性中。
-            var baseAttrbute = _data.Attribute(DcxmlFile.xNamespace + "base");
-            if (baseAttrbute != null) {
+            var baseAttribute = _data.Attribute(DcxmlRepository.DcxmlName_Base);
+            if (baseAttribute != null) {
                 //如果未设置，代表没有设置策略。如果有设置，有可能是空
-                SetLocalValue(BasePropertyInstance, new ObjectPtr(_file.Usings.GetQualifiedName(baseAttrbute.Value)));
+                SetLocalValue(BasePropertyInstance, new ObjectPtr(_file.Usings.GetQualifiedName(baseAttribute.Value)));
             }
         }
     }

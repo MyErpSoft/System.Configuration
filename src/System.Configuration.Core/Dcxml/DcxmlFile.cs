@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Linq;
+using static System.Configuration.Core.Dcxml.DcxmlRepository;
 
 namespace System.Configuration.Core.Dcxml {
 
@@ -49,8 +51,7 @@ namespace System.Configuration.Core.Dcxml {
         public UsingCollection Usings {
             get { return _usings; }
         }
-
-        internal static XNamespace xNamespace = DcxmlRepository.ConfigurationXmlNamespace;
+        
         internal IEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>> LoadParts() {
 
             /* <x:ObjectContainer
@@ -77,11 +78,17 @@ namespace System.Configuration.Core.Dcxml {
                 var root = doc.Root;
                 if (root != null) {
                     _namespace = GetNamespace(root);
-                    _usings = new UsingCollection(root.Attribute(xNamespace + "using") ? .Value, this);
+                    _usings = new UsingCollection(root.Attribute(DcxmlName_Using) ? .Value, this);
 
                     foreach (var item in root.Elements()) {
                         if (item.NodeType == XmlNodeType.Element) {
-                            var name = string.Intern(item.Attribute(xNamespace + "name").Value);
+                            var name = item.Attribute(DcxmlName_Name) ? .Value;
+                            if (!Utilities.VerifyName(name)) {
+                                Utilities.ThrowApplicationException(string.Format(CultureInfo.CurrentCulture,
+                              "在dcxml：{0}中定义的命名空间 {1} 不准确，必须是字母、数字和下划线。", this.FileName, name));
+                            }
+
+                            name = string.Intern(name);
                             var objTypeName = GetTypeName(item.Name);
 
                             yield return new KeyValuePair<FullName, ConfigurationObjectPart>(
@@ -136,9 +143,13 @@ namespace System.Configuration.Core.Dcxml {
 
 
         //获取文件的默认命名空间
-        private static string GetNamespace(XElement rootElement) {
-            var att = rootElement.Attribute(xNamespace + "namespace");
-            if (att != null && att.Value != string.Empty) {
+        private string GetNamespace(XElement rootElement) {
+            var att = rootElement.Attribute(DcxmlName_Namespace);
+            if (att != null && !string.IsNullOrEmpty(att.Value)) { //命名空间可以不填写。
+                if (!Utilities.VerifyNameWithNamespace(att.Value)) {
+                    Utilities.ThrowApplicationException(string.Format(CultureInfo.CurrentCulture,
+                              "在dcxml：{0}中定义的命名空间 {1} 不准确，必须是字母、数字和下划线或多个单词使用点分隔。", this.FileName, att.Value));
+                }
                 return string.Intern(att.Value);
             }
 

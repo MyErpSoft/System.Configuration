@@ -42,24 +42,35 @@ namespace System.Configuration.Core {
             get { return _part; }
         }
 
-        public virtual object GetValue(IProperty property) {
-            object value;
-            if (_part.TryGetLocaleValue(property, out value)) {
-                return value;
+        public object GetValue(IProperty property) {
+            //负责引用指针的转换
+            var value = this.GetValueCore(property);
+
+            if (value is ObjectPtr) {
+                ObjectPtr refValue = (ObjectPtr)value;
+                value = _workspace.GetObject(refValue.Name);
             }
 
-            //从基类搜索
-            var baseObj = this.Base;
-            if (baseObj != null) {
-                return baseObj.GetValue(property);
-            }
-            else {
-                return property.DefaultValue;
-            }
+            return value;
+        }
+        
+        protected virtual object GetValueCore(IProperty property) {
+            object value;
+            var current = this;
+            do {
+                if (current._part.TryGetLocaleValue(property,out value)) {
+                    return value;
+                }
+
+                //从基类搜索
+                current = current.Base;
+            } while (current != null);
+
+            return property.DefaultValue;
         }
 
         private ConfigurationObject _base;
-        public ConfigurationObject Base {
+        private ConfigurationObject Base {
             get {
                 if (_base == null) {
                     var baseName = _part.Base.Name;

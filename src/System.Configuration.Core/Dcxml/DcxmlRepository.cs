@@ -1,4 +1,6 @@
-﻿namespace System.Configuration.Core.Dcxml {
+﻿using System.Xml.Linq;
+
+namespace System.Configuration.Core.Dcxml {
 
     /// <summary>
     /// 一种为调试时使用的仓库，他直接使用目录作为Repository，然后一级子目录作为Package。
@@ -12,18 +14,6 @@
                 Utilities.ThrowArgumentNull(nameof(path));
             }
             this._path = path;
-        }
-
-        private static string _configurationXmlNamespace = "http://schemas.myerpsoft.com/configuration/2015";
-        /// <summary>
-        /// 返回缺省的配置系统命名空间。"http://schemas.myerpsoft.com/configuration/2015"
-        /// </summary>
-        public static string ConfigurationXmlNamespace {
-            get { return _configurationXmlNamespace; }
-            set {
-                _configurationXmlNamespace = value;
-                DcxmlFile.xNamespace = value;
-            }
         }
 
         private string _path;
@@ -78,5 +68,42 @@
         public override string ToString() {
             return "DcxmlRepository:" + this._path;
         }
+
+        #region Xml namespace
+        private static string _configurationXmlNamespace;
+        /// <summary>
+        /// 返回缺省的配置系统命名空间。"http://schemas.myerpsoft.com/configuration/2015"
+        /// </summary>
+        public static string ConfigurationXmlNamespace {
+            get { return _configurationXmlNamespace; }
+            set {
+                _configurationXmlNamespace = value;
+                UpdateXmlNamespace();
+            }
+        }
+
+        static DcxmlRepository() {
+            _configurationXmlNamespace = "http://schemas.myerpsoft.com/configuration/2015";
+            UpdateXmlNamespace();
+        }
+
+        static void UpdateXmlNamespace() {
+            XmlNamespace                = _configurationXmlNamespace;
+            DcxmlName_ObjectContainer   = XmlNamespace + "ObjectContainer";
+            DcxmlName_Namespace         = XmlNamespace + "namespace";
+            DcxmlName_Using             = XmlNamespace + "using";
+            DcxmlName_Name              = XmlNamespace + "name";
+            DcxmlName_Base              = XmlNamespace + "base";
+            DcxmlName_Ref               = XmlNamespace + "ref";
+        }
+
+        internal static XNamespace XmlNamespace;
+        internal static XName DcxmlName_ObjectContainer;
+        internal static XName DcxmlName_Namespace;
+        internal static XName DcxmlName_Using;
+        internal static XName DcxmlName_Name;
+        internal static XName DcxmlName_Base;
+        internal static XName DcxmlName_Ref;                             
+        #endregion
     }
 }
