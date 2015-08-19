@@ -2,10 +2,26 @@
 
 namespace System.Configuration.Core {
 
+    /// <summary>
+    /// 描述命名空间和名称。
+    /// </summary>
     public struct FullName {
+
+        /// <summary>
+        /// 返回命名空间
+        /// </summary>
         public readonly string Namespace;
+
+        /// <summary>
+        /// 返回名称。
+        /// </summary>
         public readonly string Name;
 
+        /// <summary>
+        /// 创建 FullName ，但注意此构造并不检查合法性。
+        /// </summary>
+        /// <param name="objNamespace">命名空间</param>
+        /// <param name="name">名称</param>
         public FullName(string objNamespace,string name) {
             this.Namespace = objNamespace;
             this.Name = name;
