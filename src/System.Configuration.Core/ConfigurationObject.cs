@@ -1,4 +1,6 @@
-﻿using System.Configuration.Core.Metadata;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Configuration.Core.Metadata;
 
 namespace System.Configuration.Core {
     /// <summary>
@@ -17,6 +19,8 @@ namespace System.Configuration.Core {
             this._name = name;
             this._part = part;
         }
+
+        private ConfigurationObject() { }
 
         private readonly ConfigurationWorkspace _workspace;
         /// <summary>
@@ -42,7 +46,16 @@ namespace System.Configuration.Core {
             get { return _part; }
         }
 
-        public object GetValue(IProperty property) {
+        /// <summary>
+        /// 返回指定属性的值。
+        /// </summary>
+        /// <param name="property">要检索的属性</param>
+        /// <returns>此属性的值。</returns>
+        public object GetSimpleValue(IProperty property) {
+            return this.GetValueCore(property);
+        }
+
+        public object GetReferenceValue(IProperty property) {
             //负责引用指针的转换
             var value = this.GetValueCore(property);
 
@@ -53,40 +66,94 @@ namespace System.Configuration.Core {
 
             return value;
         }
-        
+
+        public IList GetListValue(IProperty property) {
+            var value = this.GetListValueCore(property);
+            IEnumerable<ListDifferenceItem> items = value as IEnumerable<ListDifferenceItem>;
+            if (items != null) {
+                return DifferenceList.GetList(this._workspace, items);
+            }
+
+            return null;
+        }
+
         protected virtual object GetValueCore(IProperty property) {
+            if (property == null) {
+                Utilities.ThrowArgumentNull(nameof(property));
+            }
+
             object value;
-            var current = this;
-            do {
-                if (current._part.TryGetLocaleValue(property,out value)) {
+            //重复的代码是希望少执行一些代码
+            if (_part.TryGetLocalValue(property, out value)) {
+                return value;
+            }
+
+            var current = this.Base;
+            while (current != null) {
+                if (current._part.TryGetLocalValue(property, out value)) {
                     return value;
                 }
 
                 //从基类搜索
                 current = current.Base;
-            } while (current != null);
+            }
 
             return property.DefaultValue;
         }
 
-        private ConfigurationObject _base;
-        private ConfigurationObject Base {
-            get {
-                if (_base == null) {
-                    var baseName = _part.Base.Name;
-                    if ((object)baseName == null) {
-                        return null; //没有办法给_base加入已缓存标志。
-                    }
+        protected virtual IEnumerable<ListDifferenceItem> GetListValueCore(IProperty property) {
+            if (property == null) {
+                Utilities.ThrowArgumentNull(nameof(property));
+            }
 
-                    lock (this) {
-                        if (baseName != null) {
-                            _base = _workspace.GetConfigurationObject(baseName);
-                        }
+            List<ListDifferenceItem> result = null;
+            IEnumerable<ListDifferenceItem> firstItems = null;
+
+            CollectListValue(this, property, ref result, ref firstItems);
+
+            return result ?? (firstItems ?? new OnlyNextList<ListDifferenceItem>());
+        }
+
+        //利用递归调用实现 反转 搜索。
+        private static void CollectListValue(ConfigurationObject current, IProperty property, ref List<ListDifferenceItem> result, ref IEnumerable<ListDifferenceItem> firstItems) {
+            var next = current.Base;
+            if (next != null) {
+                CollectListValue(next, property, ref result, ref firstItems);
+            }
+
+            IEnumerable<ListDifferenceItem> items;
+            if (current._part.TryGetLocalListValue(property, out items)) {
+                if (firstItems == null) {
+                    firstItems = items;
+                }
+                else {
+                    if (result == null) {
+                        result = new List<ListDifferenceItem>(firstItems);
+                    }
+                    result.AddRange(items);
+                }
+            }
+        }
+
+        private ConfigurationObject _base;
+        /// <summary>
+        /// 返回此对象的基类信息。
+        /// </summary>
+        protected ConfigurationObject Base {
+            get {
+                if (ReferenceEquals(_base, null)) {
+                    var baseName = _part.Base.Name;
+                    _base = _workspace.GetConfigurationObject(baseName);
+
+                    if (ReferenceEquals(_base, null)) {
+                        _base = ConfigurationObject.Null; //给_base加入已缓存标志。
                     }
                 }
 
-                return _base;
+                return ReferenceEquals(_base, ConfigurationObject.Null) ? null : _base;
             }
         }
+
+        private static readonly ConfigurationObject Null = new ConfigurationObject();
     }
 }

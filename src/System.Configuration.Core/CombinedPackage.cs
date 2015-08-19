@@ -10,22 +10,19 @@
         }
 
         public override bool TryGetPart(FullName fullName, out ConfigurationObjectPart part) {
-            CombinedPart.Node first = null;
-            CombinedPart.Node last = null;
+            OnlyNextList<ConfigurationObjectPart> list = new OnlyNextList<ConfigurationObjectPart>();
             Package package;
 
             //优先级越高的，排在前面。
             for (int i = _packages.Length - 1; i >= 0; i--) {
                 package = _packages[i];
                 if (package.TryGetPart(fullName, out part)) {
-                    last = new CombinedPart.Node(part, last);
-                    if (first == null) {
-                        first = last;
-                    }
+                    list.Add(part);
                 }
             }
 
             //如果仅仅找到一个零件，没有必要输出CombinedPart，毕竟他的性能不如原生的对象(多一层调用)。
+            var first = list.First;
             if (first != null) {
                 part = (first.Next == null) ? first.Value : new CombinedPart(first);
             }

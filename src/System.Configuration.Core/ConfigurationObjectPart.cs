@@ -1,4 +1,5 @@
-﻿using System.Configuration.Core.Metadata;
+﻿using System.Collections.Generic;
+using System.Configuration.Core.Metadata;
 
 namespace System.Configuration.Core {
 
@@ -15,7 +16,15 @@ namespace System.Configuration.Core {
         /// <param name="property">要检索的属性</param>
         /// <param name="value">如果检索到有效的定义将返回他，否则返回null</param>
         /// <returns>如果检索到有效的定义将返回true</returns>
-        public abstract bool TryGetLocaleValue(IProperty property, out object value);
+        public abstract bool TryGetLocalValue(IProperty property, out object value);
+
+        /// <summary>
+        /// 返回部件内部存储的集合属性值。
+        /// </summary>
+        /// <param name="property">要检索的属性</param>
+        /// <param name="list">如果检索到有效的定义将返回他，否则返回null</param>
+        /// <returns>如果检索到有效的定义将返回true</returns>
+        public abstract bool TryGetLocalListValue(IProperty property, out IEnumerable<ListDifferenceItem> list);
 
         /// <summary>
         /// 返回基类的指针。
@@ -23,7 +32,7 @@ namespace System.Configuration.Core {
         internal ObjectPtr Base {
             get {
                 object value;
-                if (TryGetLocaleValue(BasePropertyInstance, out value)) {
+                if (TryGetLocalValue(BasePropertyInstance, out value)) {
                     return value == null ? ObjectPtr.None : (ObjectPtr)value;
                 }
 

@@ -95,6 +95,7 @@ namespace System.Configuration.Core.Dcxml {
             DcxmlName_Name              = XmlNamespace + "name";
             DcxmlName_Base              = XmlNamespace + "base";
             DcxmlName_Ref               = XmlNamespace + "ref";
+            DcxmlName_ListAction        = XmlNamespace + "action";
         }
 
         internal static XNamespace XmlNamespace;
@@ -103,7 +104,8 @@ namespace System.Configuration.Core.Dcxml {
         internal static XName DcxmlName_Using;
         internal static XName DcxmlName_Name;
         internal static XName DcxmlName_Base;
-        internal static XName DcxmlName_Ref;                             
+        internal static XName DcxmlName_Ref;
+        internal static XName DcxmlName_ListAction;                        
         #endregion
     }
 }

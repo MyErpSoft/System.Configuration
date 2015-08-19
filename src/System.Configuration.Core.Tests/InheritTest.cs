@@ -13,7 +13,7 @@ namespace System.Configuration.Core.Tests {
         }
 
         [TestMethod]
-        public void TestGetValue() {
+        public void TestInherit() {
             DcxmlRepository rep = new DcxmlRepository("root");
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
             Window win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "baseWindow", "testPackage"));

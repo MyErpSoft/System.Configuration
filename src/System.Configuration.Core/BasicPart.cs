@@ -21,8 +21,19 @@ namespace System.Configuration.Core {
         /// <param name="property">要检索的属性</param>
         /// <param name="value">如果检索到有效的定义将返回他，否则返回null</param>
         /// <returns>如果检索到有效的定义将返回true</returns>
-        public override bool TryGetLocaleValue(IProperty property, out object value) {
+        public override bool TryGetLocalValue(IProperty property, out object value) {
             return _values.TryGetValue(property, out value);
+        }
+        
+        public override bool TryGetLocalListValue(IProperty property, out IEnumerable<ListDifferenceItem> list) {
+            object value;
+            if (_values.TryGetValue(property, out value)) {
+                list = (IEnumerable<ListDifferenceItem>)value;
+                return true;
+            }
+
+            list = null;
+            return false;
         }
 
         protected void SetLocalValue(IProperty property, object value) {

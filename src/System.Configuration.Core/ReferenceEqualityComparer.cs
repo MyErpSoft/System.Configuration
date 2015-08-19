@@ -7,13 +7,14 @@ namespace System.Configuration.Core {
         public static ReferenceEqualityComparer<TKey> Default = new ReferenceEqualityComparer<TKey>();
 
         public bool Equals(TKey x, TKey y) {
-            return (object)x == (object)y;
+            return ReferenceEquals(x, y);
         }
 
         public int GetHashCode(TKey obj) {
-            if (obj == null) {
+            if (ReferenceEquals(obj, null)) {
                 return 0;
             }
+
             return RuntimeHelpers.GetHashCode(obj);
         }
     }

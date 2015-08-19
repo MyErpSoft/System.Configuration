@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<directory name="root">
+
+  <!--基础包-->
+  <directory name="rep1">
+    <directory name="testPackage">
+      <file name="CollectionTest_1.dcxml" />
+    </directory>
+  </directory>
+
+  <!--差量包-->
+  <directory name="rep2">
+    <directory name="testPackage">
+      <file name="CollectionTest_2.dcxml" />
+    </directory>
+  </directory>
+
+</directory>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration.Core.Metadata.Clr;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,7 @@ namespace System.Configuration.Core.Tests {
 
         public string Text {
             get {
-                return (string)_cObj.GetValue(TextProperty);
+                return (string)_cObj.GetSimpleValue(TextProperty);
             }
             set {
                 throw new NotImplementedException();
@@ -37,6 +38,7 @@ namespace System.Configuration.Core.Tests {
             EnabledProperty = t.GetProperty(nameof(Enabled));
             AnchorProperty = t.GetProperty(nameof(Anchor));
             BackgroundImageProperty = t.GetProperty(nameof(BackgroundImage));
+            ControlsProperty = t.GetProperty(nameof(Controls));
         }
 
         private readonly ConfigurationObject _cObj;
@@ -47,7 +49,7 @@ namespace System.Configuration.Core.Tests {
         private static readonly ClrProperty TextProperty;
         public string Text {
             get {
-                return (string)_cObj.GetValue(TextProperty);
+                return (string)_cObj.GetSimpleValue(TextProperty);
             }
             set {
                 throw new NotImplementedException();
@@ -57,7 +59,7 @@ namespace System.Configuration.Core.Tests {
         private static readonly ClrProperty EnabledProperty;
         public bool Enabled {
             get {
-                return (bool)_cObj.GetValue(EnabledProperty);
+                return (bool)_cObj.GetSimpleValue(EnabledProperty);
             }
             set {
                 throw new NotImplementedException();
@@ -66,13 +68,30 @@ namespace System.Configuration.Core.Tests {
 
         private static readonly ClrProperty AnchorProperty;
         public AnchorStyles Anchor {
-            get { return (AnchorStyles)_cObj.GetValue(AnchorProperty); }
+            get { return (AnchorStyles)_cObj.GetSimpleValue(AnchorProperty); }
             set { throw new NotImplementedException(); }
         }
 
         private static readonly ClrProperty BackgroundImageProperty;
         public Image BackgroundImage {
-            get { return (Image)_cObj.GetValue(BackgroundImageProperty); }
+            get { return (Image)_cObj.GetReferenceValue(BackgroundImageProperty); }
+        }
+
+        private static readonly ClrProperty ControlsProperty;
+        private ControlCollection _controls;
+        public ControlCollection Controls {
+            get {
+                if (_controls == null) {
+                    _controls = new ControlCollection(_cObj.GetListValue(ControlsProperty).Cast<Control>().ToList());
+                }
+
+                return _controls;
+            }
+        }
+    }
+
+    public class ControlCollection : Collection<Control> {
+        public ControlCollection(IList<Control> list):base(list) {
         }
     }
 
@@ -89,7 +108,7 @@ namespace System.Configuration.Core.Tests {
 
         private static readonly ClrProperty PathProperty;
         public string Path {
-            get { return (string)_cObj.GetValue(PathProperty); }
+            get { return (string)_cObj.GetSimpleValue(PathProperty); }
             set {
                 throw new NotImplementedException();
             }

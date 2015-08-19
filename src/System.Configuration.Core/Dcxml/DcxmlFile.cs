@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using static System.Configuration.Core.Dcxml.DcxmlRepository;
@@ -141,6 +142,31 @@ namespace System.Configuration.Core.Dcxml {
             return typeNameWithoutName.CreateByName(name.LocalName);
         }
 
+        internal static string GetXObjectDebugString(XElement element, XAttribute att) {
+            StringBuilder sb = new StringBuilder();
+            XObject xObject = null;
+            if (element != null) {
+                sb.Append('<');
+                sb.Append(element.Name);
+                xObject = element;
+            }
+
+            if (att != null) {
+                xObject = att;
+                sb.Append("[" + att.Name + "]");
+            }
+            
+            IXmlLineInfo lineInfo = (IXmlLineInfo)xObject;
+            if (lineInfo != null && lineInfo.HasLineInfo()) {
+                sb.Append('(');
+                sb.Append(lineInfo.LineNumber);
+                sb.Append(',');
+                sb.Append(lineInfo.LinePosition);
+                sb.Append(')');
+            }
+
+            return sb.ToString();
+        }
 
         //获取文件的默认命名空间
         private string GetNamespace(XElement rootElement) {

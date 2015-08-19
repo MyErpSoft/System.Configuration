@@ -62,6 +62,7 @@
     <Compile Include="BasicTest.cs" />
     <Compile Include="TestClasses.cs" />
     <Compile Include="ConverterTest.cs" />
+    <Compile Include="CollectionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Demo.dxml" />
@@ -70,6 +71,8 @@
     <EmbeddedResource Include="Files\DiffTest_1.dcxml" />
     <EmbeddedResource Include="Files\InheritTest_1.dcxml" />
     <EmbeddedResource Include="Files\ConverterTest.dcxml" />
+    <EmbeddedResource Include="Files\CollectionTest_1.dcxml" />
+    <EmbeddedResource Include="Files\CollectionTest_2.dcxml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Files\BasicTest.xml" />
@@ -86,6 +89,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Files\ConverterTest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Files\CollectionTest.xml" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

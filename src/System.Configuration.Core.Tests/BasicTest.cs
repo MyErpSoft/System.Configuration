@@ -13,7 +13,7 @@ namespace System.Configuration.Core.Tests {
         }
 
         [TestMethod]
-        public void TestGetValue() {
+        public void TestHelloWorld() {
             DcxmlRepository rep = new DcxmlRepository("root");
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
             Window win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "frmMain", "testPackage"));

@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<x:ObjectContainer
+               xmlns="clr-namespace:System.Configuration.Core.Tests,System.Configuration.Core.Tests"
+               xmlns:x="http://schemas.myerpsoft.com/configuration/2015"
+               x:namespace="company.erp.demo">
+
+  <!--差量化，将A1_1删除，然后添加一个新的-->
+  <Button x:name="A1"  x:action="edit">
+    <Controls>
+      <Button x:ref="A1_1" x:action="remove" />
+      <Button x:ref="A1_3" />
+    </Controls>
+  </Button>
+
+  <Button x:name="A1_3" >
+    <Text>A1_3</Text>
+  </Button>
+
+  <!--对派生的类进行差量-->
+  <Button x:name="D1" x:action="edit">
+    <Controls>
+      <Button x:ref="D1_1" x:action="remove"/>
+      <Button x:ref="D1_2" />
+      <Button x:ref="A1_1"  /> <!--把原先删除掉的记录又重新添加回来。-->
+    </Controls>
+  </Button>
+
+  <Button x:name="D1_2" >
+    <Text>D1_2</Text>
+  </Button>
+  
+</x:ObjectContainer>
