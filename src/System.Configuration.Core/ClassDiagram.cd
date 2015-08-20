@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="第一层：知识库&#xD;&#xA;如果你开发一个ERP，那么这个ERP就是一个Repository。&#xD;&#xA;如果有个二次开发就又是一个Repository，并且依赖前面的Repository。">
+    <Position X="2.5" Y="2.5" Height="0.917" Width="3.502" />
+  </Comment>
+  <Comment CommentText="使用xml形式存储的库，相当于Visual Studio 的解决方案源代码。&#xD;&#xA;VS编译后会生成dll，我们也一样对应的是二进制Repository">
+    <Position X="0.5" Y="3.406" Height="1.427" Width="1.825" />
+  </Comment>
+  <Comment CommentText="Repository包含很多Package。">
+    <Position X="3.646" Y="7.01" Height="0.354" Width="1.95" />
+  </Comment>
+  <Comment CommentText="第二层：库&#xD;&#xA;库相当于dll，是存放数据的检索形式，运行时检索某个配置对象时不至于先加载所有文件。">
+    <Position X="5.927" Y="4.479" Height="0.917" Width="3.502" />
+  </Comment>
+  <Comment CommentText="第三层：零件&#xD;&#xA;单个配置对象的数据，相当于当个类实例。">
+    <Position X="8.083" Y="5.896" Height="0.917" Width="3.502" />
+  </Comment>
+  <Comment CommentText="如何检索一个配置对象？&#xD;&#xA;先看看MSDN关于.net中Type.AssemblyQualifiedName 的说明，我们的配置系统一模一样。&#xD;&#xA;System.Array, mscorlib&#xD;&#xA;对应在配置系统，就是下面这个东西。">
+    <Position X="8.792" Y="0.5" Height="1.135" Width="3.981" />
+  </Comment>
+  <Comment CommentText="Package包含很多零件。">
+    <Position X="8.167" Y="7.896" Height="0.354" Width="2.492" />
+  </Comment>
+  <Comment CommentText="运行时的工作空间，在这里你就可以获取到配置对象了（ConfigurationObject），一个配置对象是对内部所有零件信息的最终包装。">
+    <Position X="2.01" Y="9.24" Height="0.625" Width="5.429" />
+  </Comment>
+  <Class Name="System.Configuration.Core.Repository">
+    <Position X="3.25" Y="4.25" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Dependencies" Type="System.Configuration.Core.Repository" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.25" Y="4.657" />
+        <Point X="5.625" Y="4.657" />
+        <Point X="5.625" Y="3.875" />
+        <Point X="4.333" Y="3.875" />
+        <Point X="4.333" Y="4.25" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.827" Y="0.445" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>QAAIAAAAAEAAAACAAAAEAAAAAABAAAgwAAQAAAQACAA=</HashCode>
+      <FileName>Repository.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Dependencies" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="System.Configuration.Core.Dcxml.DcxmlRepository" Collapsed="true">
+    <Position X="0.5" Y="5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>KAAgAAAQAABCAAiEAQEAAAAAAACAAAAAAAAAAAwAAiA=</HashCode>
+      <FileName>Dcxml\DcxmlRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Configuration.Core.Package">
+    <Position X="6" Y="5.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAIAIAAABAAAAEAAAAAAQAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>Package.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Configuration.Core.ConfigurationObjectPart" Collapsed="true">
+    <Position X="8.25" Y="7" Width="2" />
+    <NestedTypes>
+      <Class Name="System.Configuration.Core.ConfigurationObjectPart.BaseProperty" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ConfigurationObjectPart.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAACABEAAAAQAAAAADQQA=</HashCode>
+      <FileName>ConfigurationObjectPart.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Configuration.Core.QualifiedName">
+    <Position X="8.75" Y="1.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIIAEgAAAAAIAAAAQAIAAAAAAAAAAAiA=</HashCode>
+      <FileName>QualifiedName.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="FullName" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="System.Configuration.Core.ConfigurationWorkspace">
+    <Position X="2" Y="10" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="System.Configuration.Core.ConfigurationWorkspace.ObjectPart" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ConfigurationWorkspace.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAICAQBAIAAAAAgAAAAAAAAAAAgAAAAAgAAAAAA=</HashCode>
+      <FileName>ConfigurationWorkspace.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Configuration.Core.ConfigurationObject" Collapsed="true">
+    <Position X="5.5" Y="10" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAEAIAAAIABQAAgAgAAAAAQCAQAAAAAAAAoIAAABQAA=</HashCode>
+      <FileName>ConfigurationObject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="System.Configuration.Core.FullName">
+    <Position X="11.5" Y="1.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="System.Configuration.Core.FullName.PartKeyEqualityComparer" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>FullName.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEgAAAAAQAAAAAIIAAAAAAAAAAAyA=</HashCode>
+      <FileName>FullName.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Font Name="Microsoft YaHei UI" Size="9" />
+</ClassDiagram>
