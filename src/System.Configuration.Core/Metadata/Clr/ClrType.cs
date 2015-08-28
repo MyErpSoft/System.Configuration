@@ -36,6 +36,25 @@ namespace System.Configuration.Core.Metadata.Clr {
         internal ClrType(Type clrType)
             : base(clrType) { }
 
+        private ObjectTypeQualifiedName _qualifiedName;
+        /// <summary>
+        /// 返回此类型的完整名称。
+        /// </summary>
+        public ObjectTypeQualifiedName QualifiedName {
+            get {
+                if (_qualifiedName == null) {
+                    _qualifiedName = new ObjectTypeQualifiedName(
+                        ConfigurationObjectBinder.ClrBinderProviderName,
+                        this.ClrMapping.Namespace,
+                        this.ClrMapping.Name,
+                        this.ClrMapping.Assembly.FullName //注意这里可能包含版本，时区等信息，例如：ExampleAssembly, Version=1.0.0.0, Culture=en, PublicKeyToken=a5d015c7d5a0b012
+                        );
+                }
+
+                return _qualifiedName;
+            }
+        }
+
         public ClrProperty GetProperty(string name) {
             ClrProperty property;
             if (TryGetProperty(name, out property)) {

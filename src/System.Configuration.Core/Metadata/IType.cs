@@ -8,6 +8,11 @@ namespace System.Configuration.Core.Metadata {
     public interface IType {
 
         /// <summary>
+        /// 返回此类型的完整名称。
+        /// </summary>
+        ObjectTypeQualifiedName QualifiedName { get; }
+
+        /// <summary>
         /// 返回指定名称的属性。
         /// </summary>
         /// <param name="name">要检索的属性名称</param>

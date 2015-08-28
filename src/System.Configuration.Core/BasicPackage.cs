@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Configuration.Core.Collections;
 using System.Globalization;
 
 namespace System.Configuration.Core {
@@ -16,7 +17,16 @@ namespace System.Configuration.Core {
         /// <returns>可枚举的部件集合，所有部件必须完成命名的检查，以及让所有命名字符串公用字符串引用。</returns>
         protected abstract IEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>> LoadPartsCore();
 
-        private Dictionary<FullName, ConfigurationObjectPart> GetParts() {
+        /// <summary>
+        /// 用于返回所有的部件。
+        /// </summary>
+        /// <returns>可枚举的部件集合，所有部件必须完成命名的检查，以及让所有命名字符串公用字符串引用。</returns>
+        public override IEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>> GetParts() {
+            var parts = _parts ?? this.LoadParts();
+            return new ReadOnlyEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>>(parts);
+        }
+
+        private Dictionary<FullName, ConfigurationObjectPart> LoadParts() {
             lock (this) {
                 if (_parts == null) {
                     Dictionary<FullName, ConfigurationObjectPart> parts = new Dictionary<FullName, ConfigurationObjectPart>(FullName.Comparer);
@@ -50,7 +60,7 @@ namespace System.Configuration.Core {
         private Dictionary<FullName, ConfigurationObjectPart> _parts;
 
         public override sealed bool TryGetPart(FullName fullName, out ConfigurationObjectPart part) {
-            var parts = _parts ?? this.GetParts();
+            var parts = _parts ?? this.LoadParts();
             return parts.TryGetValue(fullName, out part);
         }
     }

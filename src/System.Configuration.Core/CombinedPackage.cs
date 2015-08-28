@@ -1,4 +1,8 @@
-﻿namespace System.Configuration.Core {
+﻿using System.Linq;
+using System.Collections.Generic;
+using System.Configuration.Core.Collections;
+
+namespace System.Configuration.Core {
 
     internal class CombinedPackage : Package
     {
@@ -32,6 +36,27 @@
 
             //在结束时，没有调用OpenData方法，因为这是一个虚拟的包，在上面的TryGetPart时真实的包已经完成调用。
             return part != null;
+        }
+
+        public override IEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>> GetParts() {
+            HashSet<FullName> allPairKeys = new HashSet<FullName>();
+            foreach (var package in _packages) {
+                foreach (var pair in package.GetParts()) {
+                    allPairKeys.Add(pair.Key);
+                }
+            }
+
+            return from p in allPairKeys select new KeyValuePair<FullName, ConfigurationObjectPart>(p, GetPart(p));
+        }
+
+        private ConfigurationObjectPart GetPart(FullName fullName) {
+            ConfigurationObjectPart result;
+            if (this.TryGetPart(fullName,out result)) {
+                return result;
+            }
+
+            Utilities.ThrowNotSupported("内部错误，GetPart失败。");
+            return null;
         }
     }
 }

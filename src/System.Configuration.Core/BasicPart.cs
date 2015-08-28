@@ -44,6 +44,9 @@ namespace System.Configuration.Core {
             _values.Remove(property);
         }
 
+        public override IEnumerable<KeyValuePair<IProperty, object>> GetLocalValues() {
+            return _values;
+        }
         #endregion
 
         #region TypeInfo

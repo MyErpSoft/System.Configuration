@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Configuration.Core.Collections;
 using System.Configuration.Core.Metadata;
 
 namespace System.Configuration.Core {

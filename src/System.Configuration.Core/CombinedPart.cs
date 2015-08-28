@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Configuration.Core.Collections;
 using System.Configuration.Core.Metadata;
 using System.Diagnostics;
 
@@ -86,6 +87,10 @@ namespace System.Configuration.Core {
                     result.AddRange(items);
                 }
             }
+        }
+
+        public override IEnumerable<KeyValuePair<IProperty, object>> GetLocalValues() {
+            throw new NotImplementedException();
         }
 
         public override IType Type {

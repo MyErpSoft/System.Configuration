@@ -29,7 +29,7 @@ namespace System.Configuration.Core.Metadata {
             return result;
         }
 
-        public readonly static string ClrBinderProviderName = "clr-namespace";
+        public const string ClrBinderProviderName = "clr-namespace";
         /// <summary>
         /// 默认实现的clr-namespace的绑定器
         /// </summary>

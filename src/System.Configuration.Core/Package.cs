@@ -1,4 +1,6 @@
-﻿namespace System.Configuration.Core {
+﻿using System.Collections.Generic;
+
+namespace System.Configuration.Core {
 
     /// <summary>
     /// 描述了一个包对象。
@@ -37,6 +39,12 @@
         /// <param name="part">如果找到返回一个部件对象</param>
         /// <returns>如果找到返回true。</returns>
         public abstract bool TryGetPart(FullName fullName, out ConfigurationObjectPart part);
+
+        /// <summary>
+        /// 派生类重载此方法，用于返回所有的部件。
+        /// </summary>
+        /// <returns>可枚举的部件集合，所有部件必须完成命名的检查，以及让所有命名字符串公用字符串引用。</returns>
+        public abstract IEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>> GetParts();
 
         public override string ToString() {
             return this.Name;

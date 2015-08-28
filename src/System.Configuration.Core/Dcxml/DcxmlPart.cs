@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Configuration.Core.Collections;
 using System.Configuration.Core.Metadata;
 using System.Globalization;
 using System.Xml.Linq;

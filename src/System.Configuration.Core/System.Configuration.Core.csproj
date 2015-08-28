@@ -33,11 +33,14 @@
   <ItemGroup>
     <Compile Include="BasicPackage.cs" />
     <Compile Include="BasicPart.cs" />
+    <Compile Include="Collections\ReadOnlyEnumerable.cs" />
     <Compile Include="CombinedPackage.cs" />
     <Compile Include="CombinedPart.cs" />
     <Compile Include="ConfigurationEntityStorage.cs" />
     <Compile Include="ConfigurationObject.cs" />
     <Compile Include="Dcxml\UsingCollection.cs" />
+    <Compile Include="Dc\BinaryPackageWriter.cs" />
+    <Compile Include="Dc\DataClasses.cs" />
     <Compile Include="DifferenceList.cs" />
     <Compile Include="ListDifferenceItem.cs" />
     <Compile Include="Metadata\Clr\ClrProperty.cs" />
@@ -49,7 +52,7 @@
     <Compile Include="Metadata\IType.cs" />
     <Compile Include="Metadata\ReadOnlyKeyedCollection.cs" />
     <Compile Include="ObjectPtr.cs" />
-    <Compile Include="OnlyNextList.cs" />
+    <Compile Include="Collections\OnlyNextList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

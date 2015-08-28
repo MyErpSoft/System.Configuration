@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace System.Configuration.Core {
+namespace System.Configuration.Core.Collections {
 
     /// <summary>
     /// 一种仅仅能向前检索的列表，开销更小。

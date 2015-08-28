@@ -46,6 +46,12 @@ namespace System.Configuration.Core {
         protected static IProperty BasePropertyInstance = new BaseProperty();
         #endregion
 
+        /// <summary>
+        /// 返回此部件定义的所有本地值清单。
+        /// </summary>
+        /// <returns>一个枚举的清单，用于返回</returns>
+        public abstract IEnumerable<KeyValuePair<IProperty, object>> GetLocalValues();
+
         #region TypeInfo
         /// <summary>
         /// 返回当前部件对应的类型
