@@ -15,6 +15,10 @@ namespace System.Configuration.Core {
         public override Stream Open(string path, FileMode mode, FileAccess access, FileShare share) {
             return File.Open(path, mode, access, share);
         }
+
+        public override string GetFileNameWithoutExtension(string path) {
+            return Path.GetFileNameWithoutExtension(path);
+        }
     }
 }
 #endif

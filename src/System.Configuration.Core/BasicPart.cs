@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Configuration.Core.Collections;
 using System.Configuration.Core.Metadata;
 
 namespace System.Configuration.Core {
 
     internal abstract class BasicPart : ConfigurationObjectPart {
-        private ObjectTypeQualifiedName _typeName;
 
-        protected BasicPart(ObjectTypeQualifiedName typeName) {
-            this._typeName = typeName;
+        protected BasicPart() {
             this._values = new Dictionary<IProperty, object>(ReferenceEqualityComparer<IProperty>.Default);
         }
         
@@ -45,7 +44,7 @@ namespace System.Configuration.Core {
         }
 
         public override IEnumerable<KeyValuePair<IProperty, object>> GetLocalValues() {
-            return _values;
+            return new ReadOnlyEnumerable<KeyValuePair<IProperty, object>>(_values);
         }
         #endregion
 
@@ -58,6 +57,12 @@ namespace System.Configuration.Core {
         public override IType Type {
             get { return _type; }
         }
+
+        /// <summary>
+        /// 返回此部件的类型描述
+        /// </summary>
+        protected abstract ObjectTypeQualifiedName TypeName { get; }
+
         #endregion
 
         #region OpenData
@@ -66,8 +71,8 @@ namespace System.Configuration.Core {
                 this._type = ctx.Type;
             }
             else {
-                if ((object)this._typeName != null) {
-                    this._type = ctx.Binder.BindToType(_typeName);
+                if ((object)this.TypeName != null) {
+                    this._type = ctx.Binder.BindToType(TypeName);
                     ctx.Type = this._type;
                 }
             }

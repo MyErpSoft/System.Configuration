@@ -9,10 +9,16 @@ namespace System.Configuration.Core.Dcxml {
     internal class DcxmlPart : BasicPart {
         private XElement _data;
         private DcxmlFile _file;
-
-        public DcxmlPart(DcxmlFile file, ObjectTypeQualifiedName typeName, XElement data):base(typeName) {
+        private ObjectTypeQualifiedName _typeName;
+        
+        public DcxmlPart(DcxmlFile file, ObjectTypeQualifiedName typeName, XElement data) {
+            this._typeName = typeName;
             this._file = file;
             this._data = data;
+        }
+
+        protected override ObjectTypeQualifiedName TypeName {
+            get { return _typeName; }
         }
 
         protected override void OpenDataCore(OpenDataContext ctx) {

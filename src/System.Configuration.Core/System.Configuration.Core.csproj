@@ -39,8 +39,12 @@
     <Compile Include="ConfigurationEntityStorage.cs" />
     <Compile Include="ConfigurationObject.cs" />
     <Compile Include="Dcxml\UsingCollection.cs" />
+    <Compile Include="Dc\BinaryPackageReader.cs" />
     <Compile Include="Dc\BinaryPackageWriter.cs" />
     <Compile Include="Dc\DataClasses.cs" />
+    <Compile Include="Dc\DcPackage.cs" />
+    <Compile Include="Dc\DcPart.cs" />
+    <Compile Include="Dc\PackageReadContext.cs" />
     <Compile Include="DifferenceList.cs" />
     <Compile Include="ListDifferenceItem.cs" />
     <Compile Include="Metadata\Clr\ClrProperty.cs" />

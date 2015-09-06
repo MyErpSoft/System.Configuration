@@ -23,7 +23,17 @@ namespace System.Configuration.Core.Tests {
             //测试时检索到的文件名是没有path路径的，只有文件名
             //var file = this.Root.GetFile(path);
             //return file.Open();
-            return TestFile.GetResourceStream(path);
+            if (access == FileAccess.Read) {
+                return TestFile.GetResourceStream(path);
+            }
+            else {
+                string fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Path.GetFileName(path));
+                return File.Open(fileName, mode, access, share);
+            }            
+        }
+
+        public override string GetFileNameWithoutExtension(string path) {
+            return Path.GetFileNameWithoutExtension(path);
         }
     }
 }

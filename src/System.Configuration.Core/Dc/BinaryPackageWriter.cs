@@ -10,25 +10,38 @@ namespace System.Configuration.Core.Dc {
     /// 二进制格式的Package写入器。
     /// </summary>
     internal sealed class BinaryPackageWriter : BinaryWriter {
-        const string version = "2.0";
-        const string fileHead = "Difference Configuration File " + version;
-
+        internal const string version = "2.0";
+        internal const string fileHead = "Difference Configuration File " + version;
+        
         public BinaryPackageWriter(Stream output):base(output) {
         }
 
-        public void WritePackage(Package package,OpenDataContext openDataContext) {
-            if (package == null) {
-                Utilities.ThrowArgumentNull(nameof(package));
+        public static void ConvertToDc(string filePath, Package sourcePackage, ConfigurationObjectBinder binder) {
+            using (var stream = PlatformUtilities.Current.Open(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
+                using (var writer = new BinaryPackageWriter(stream)) {
+                    writer.WritePackage(sourcePackage, binder);
+                }
+
+                stream.Flush();
             }
-            if (openDataContext == null) {
-                Utilities.ThrowArgumentNull(nameof(openDataContext));
+        }
+
+        public void WritePackage(Package sourcePackage, ConfigurationObjectBinder binder) {
+            if (sourcePackage == null) {
+                Utilities.ThrowArgumentNull(nameof(sourcePackage));
+            }
+            if (binder == null) {
+                Utilities.ThrowArgumentNull(nameof(binder));
             }
 
-            PackageWriteContext ctx = new PackageWriteContext();
+            PackageWriteContext ctx = new PackageWriteContext(sourcePackage);
             List<PartData> partDatas = new List<PartData>();
             
-            foreach (var part in package.GetParts()) {
-                part.Value.OpenData(openDataContext);
+            foreach (var part in sourcePackage.GetParts()) {
+                if (!part.Value.IsOpened) {
+                    part.Value.OpenData(new OpenDataContext(binder, new QualifiedName(part.Key, sourcePackage.Name)));
+                }
+                
                 partDatas.Add(new PartData(part.Key,part.Value,ctx));
             }
 
@@ -42,15 +55,33 @@ namespace System.Configuration.Core.Dc {
             //3 对象标识清单
             this.WriteObjectIds(partDatas);
 
-            //4 值数据块
-            this.WriteObjects(partDatas, ctx);
+            //为了方便读取程序，写入的顺序实际是比较别扭的。
+            using (var ms = new MemoryStream()) {
+                using (var writer = new BinaryPackageWriter(ms)) {
+                    //4 值数据块
+                    writer.WriteObjects(partDatas, ctx);
 
-            //5 类型
-            this.WriteObjectTypes(ctx.TypeDict.GetItems(), ctx);
+                    var typeStartIndex = ms.Position;
+                    //5 类型
+                    writer.WriteObjectTypes(ctx.TypeDict.GetItems(), ctx);
 
-            //6 剩余的字符串
-            this.WriteStrings(ctx.StringDict.GetItems(), priorityStrings.Length);
+                    var stringStartIndex = ms.Position;
+                    //6 剩余的字符串
+                    writer.WriteStrings(ctx.StringDict.GetItems(), priorityStrings.Length);
+
+                    //现在，需要将数据倒过来写入文件流，以便读取时比较方便。
+                    CopyStream(ms, this.BaseStream, stringStartIndex, (ms.Position - stringStartIndex));
+                    CopyStream(ms, this.BaseStream, typeStartIndex, (stringStartIndex - typeStartIndex));
+                    CopyStream(ms, this.BaseStream, 0, typeStartIndex);
+                }
+            }
+            
         }
+
+        private static void CopyStream(MemoryStream source, Stream target, long startIndex, long size) {
+            target.Write(source.GetBuffer(), (int)startIndex, (int)size);
+        }
+
 
         //写入文件头
         private void WriteFileHead() {
@@ -103,8 +134,6 @@ namespace System.Configuration.Core.Dc {
         }
 
         private void WriteObjects(List<PartData> partDatas, PackageWriteContext ctx) {
-            this.Write7BitEncodedInt(partDatas.Count);
-
             foreach (var item in partDatas) {
                 this.WriteObject(item.Part,ctx);
             }
@@ -119,11 +148,15 @@ namespace System.Configuration.Core.Dc {
             var typeData = ctx.TypeDict.GetId(part.Type);
             this.Write7BitEncodedInt(typeData.Order);
 
-            //基类
-            this.Write(part.Base, ctx);
+            //注意这里，基类信息没有在这里写入，而是作为property写入，即在下面的values循环中。
+            //this.Write(part.Base, ctx);
+
+            //todo:action='edit'
 
             var values = part.GetLocalValues();
             //值总数。
+            this.Write7BitEncodedInt(values.Count());
+
             foreach (var pair in values) {
                 //属性位置。注意，这里的位置是此属性在Type上的位置（使用编码器创建的位置，非顺序位置），不是属性字符串在列表中的位置。
                 this.Write7BitEncodedInt(typeData.Properties.GetId(pair.Key));
@@ -184,12 +217,20 @@ namespace System.Configuration.Core.Dc {
 
         private void Write(QualifiedName name, PackageWriteContext ctx) {
             if (name == null) {
-                this.Write7BitEncodedInt(0);
+                this.Write((char)0);
             }
             else {
+                this.Write((char)1);
                 this.Write7BitEncodedInt(ctx.StringDict.GetId(name.FullName.Namespace));
                 this.Write7BitEncodedInt(ctx.StringDict.GetId(name.FullName.Name));
-                this.Write7BitEncodedInt(ctx.StringDict.GetId(name.PackageName));
+
+                //需要删除包信息，因为包的名称来自文件名（外部），所以对本包的引用应该使用0表示。
+                if (name.PackageName == ctx.SourcePackage.Name) {
+                    this.Write7BitEncodedInt(0);
+                }
+                else {
+                    this.Write7BitEncodedInt(ctx.StringDict.GetId(name.PackageName));
+                }
             }
         }
 

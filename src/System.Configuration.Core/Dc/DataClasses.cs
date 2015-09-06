@@ -66,9 +66,10 @@ namespace System.Configuration.Core.Dc {
     }
 
     internal sealed class PackageWriteContext {
-        public PackageWriteContext() {
+        public PackageWriteContext(Package sourcePackage) {
             this._stringDict = new ObjectIDGenerator<string>();
             this._typeDict = new ObjectTypeIDGenerator();
+            this._sourcePackage = sourcePackage;
         }
 
         //存储所有字符串的字典
@@ -76,6 +77,7 @@ namespace System.Configuration.Core.Dc {
 
         //存储所有使用到的类型对象
         ObjectTypeIDGenerator _typeDict;
+        private readonly Package _sourcePackage;
 
         internal ObjectIDGenerator<string> StringDict {
             get { return _stringDict; }
@@ -83,6 +85,10 @@ namespace System.Configuration.Core.Dc {
 
         internal ObjectTypeIDGenerator TypeDict {
             get { return _typeDict; }
+        }
+
+        public Package SourcePackage {
+            get { return _sourcePackage; }
         }
     }
 

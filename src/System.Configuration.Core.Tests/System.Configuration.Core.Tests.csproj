@@ -54,6 +54,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="DcTest.cs" />
     <Compile Include="DiffTest.cs" />
     <Compile Include="InheritTest.cs" />
     <Compile Include="PlatformTestUtilities.cs" />

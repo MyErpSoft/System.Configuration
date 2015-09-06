@@ -43,7 +43,7 @@ namespace System.Configuration.Core {
         /// <summary>
         /// 能够访问到基类信息。
         /// </summary>
-        protected static IProperty BasePropertyInstance = new BaseProperty();
+        public static IProperty BasePropertyInstance = new BaseProperty();
         #endregion
 
         /// <summary>
