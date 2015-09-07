@@ -20,9 +20,8 @@ namespace System.Configuration.Core.Dc {
             using (var stream = PlatformUtilities.Current.Open(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
                 using (var writer = new BinaryPackageWriter(stream)) {
                     writer.WritePackage(sourcePackage, binder);
+                    stream.Flush();
                 }
-
-                stream.Flush();
             }
         }
 
@@ -85,7 +84,9 @@ namespace System.Configuration.Core.Dc {
 
         //写入文件头
         private void WriteFileHead() {
-            this.Write(fileHead);
+            foreach (var item in BinaryPackageWriter.fileHead) {
+                this.Write(item);
+            }
         }
 
         //写入字符串清单表
@@ -93,7 +94,7 @@ namespace System.Configuration.Core.Dc {
         // string[]         顺序填写的字符串
         private void WriteStrings(string[] strings,int startIndex) {
             //写入总共多少，以便读取时知道什么时候结束了。
-            this.Write7BitEncodedInt(strings.Length);
+            this.Write7BitEncodedInt(strings.Length - startIndex);
 
             for (int i = startIndex; i < strings.Length; i++) {
                 this.Write(strings[i]);//不能出现null.
@@ -141,8 +142,8 @@ namespace System.Configuration.Core.Dc {
 
         private void WriteObject(ConfigurationObjectPart part, PackageWriteContext ctx) {
             //记录当前的位置，先先入数据块大小（0），然后等写完毕后就知道实际多大，然后重新写入正确的值。
-            var startPosition = this.OutStream.Position;
             this.Write(0); //不能使用Write7BitEncodedInt，那个是动态大小的。
+            var startPosition = this.OutStream.Position;
 
             //类型信息。
             var typeData = ctx.TypeDict.GetId(part.Type);
@@ -165,8 +166,12 @@ namespace System.Configuration.Core.Dc {
 
             //重新补入数据块大小
             var endPosition = this.OutStream.Position;
-            this.OutStream.Position = startPosition;
-            this.Write(endPosition - startPosition);
+            //注意这里减去4，因为size是先写入再记录startPosition，所以实际位置要偏左（int32是4字节），大概像下面这个样子：
+            //07 01 0D 28 00 00 00 01     04 01 01 02 4F 4B 02 01
+            //         ^           ^
+            //         大小描述     数据块开始
+            this.OutStream.Position = startPosition - 4; 
+            this.Write((int)(endPosition - startPosition));
             this.OutStream.Position = endPosition;
         }
 

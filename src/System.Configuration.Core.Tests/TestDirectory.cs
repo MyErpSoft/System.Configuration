@@ -3,9 +3,22 @@ using System.Linq;
 using System.Reflection;
 using System.Resources;
 using System.Xml.Serialization;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Configuration.Core.Tests {
+    /*
+    测试程序如何工作的？
 
+    以BasicTest为例，在测试类初始化时，将在测试目录：..\..\TestResults\Deploy_tansm 2015-09-06 17_17_48\Out
+    下建立目录：System.Configuration.Core.Tests.BasicTest，包含命名空间和类名。
+
+    然后根据传入的配置文件初始化信息，例如：BasicTest.xml。根据配置文件的描述，在之前的目录下再建立对应的目录：testPackage
+    以及将Files目录下的文件复制到此目录。
+    */
+
+    /// <summary>
+    /// 目录项。
+    /// </summary>
     public abstract class TestFileItem {
         [XmlAttribute("name")]
         public string Name { get; set; }
@@ -13,83 +26,99 @@ namespace System.Configuration.Core.Tests {
 
     [XmlType("directory")]
     public class TestDirectory : TestFileItem {
+        private string _path;
 
         public TestDirectory() {
 
         }
 
-        public static TestDirectory Create(string resurceName) {
+        public static TestDirectory Create(object instance, string resurceName) {
+            TestContext testContext = GetTestContext(instance);
+
+            //测试输出目录。
+            var outputDirectory = testContext.TestDeploymentDir;
+            //命名空间+名称的目录
+            var rootDirectory = instance.GetType().FullName;
+            
+            TestDirectory root;
             using (var stream = TestFile.GetResourceStream(resurceName)) {
                 XmlSerializer ser = new XmlSerializer(typeof(TestDirectory));
-                return (TestDirectory)ser.Deserialize(stream);
+                root = (TestDirectory)ser.Deserialize(stream);
+            }
+
+            root.Name = rootDirectory;
+            root.Build(outputDirectory);
+
+            return root;
+        }
+
+        private void Build(string parent) {
+            this._path = IO.Path.Combine(parent, this.Name);
+            Directory.CreateDirectory(Path);
+
+            if (this.Items != null) {
+                foreach (var item in Items) {
+                    TestDirectory dir = item as TestDirectory;
+                    if (dir != null) {
+                        dir.Build(Path);
+                    }
+                    else {
+                        TestFile file = item as TestFile;
+                        if (file != null) {
+                            file.Build(Path);
+                        }
+                        else {
+                            Utilities.ThrowNotSupported("?");
+                        }
+                    }
+                }
             }
         }
-        
+
+        private static TestContext GetTestContext(object instance) {
+            if (instance == null) {
+                Utilities.ThrowArgumentNull(nameof(instance));
+            }
+            var testContextProperty = instance.GetType().GetProperty("TestContext");
+            if (testContextProperty == null) {
+                Utilities.ThrowApplicationException("测试程序没有包含TestContext属性");
+            }
+            var testContext = (TestContext)testContextProperty.GetValue(instance);
+            return testContext;
+        }
+
         [XmlElement("directory", typeof(TestDirectory))]
         [XmlElement("file",typeof(TestFile))]
         public TestFileItem[] Items;
 
-        public TestDirectory GetDirectory(string path) {
-            if (string.IsNullOrEmpty(path) || path == ".") {
-                return this;
+        public string Path {
+            get {
+                return _path;
             }
-
-            var sp = path.Split('\\');
-            var current = this;
-            foreach (var item in sp) {
-                if (current.Items == null) {
-                    Utilities.ThrowArgumentNull(nameof(path));
-                }
-
-                current = (TestDirectory)current.Items.First((p) => p is TestDirectory && p.Name == item);
-                if (current == null) {
-                    Utilities.ThrowArgumentNull(nameof(path));
-                }
-            }
-
-            return current;
         }
-
-        public TestFile GetFile(string path) {
-            var sp = path.Split('\\');
-            var current = this;
-            for (int i = 0; i < sp.Length - 1; i++) {
-                var item = sp[i];
-                if (current.Items == null) {
-                    Utilities.ThrowArgumentNull(nameof(path));
-                }
-
-                current = (TestDirectory)current.Items.First((p) => p is TestDirectory && p.Name == item);
-            }
-
-            var fileName = sp[sp.Length - 1];
-            return (from p in current.Items where p is TestFile && p.Name == fileName select (TestFile)p).First();
-        }
-
-        public string[] GetFiles(string searchPattern, bool topDirectoryOnly) {
-            return (from p in this.Items where p is TestFile && IsOk(p.Name, searchPattern) select p.Name).ToArray();
-        }
-
-        private static bool IsOk(string fileName, string searchPattern) {
-            if (searchPattern == "*.dcxml") {
-                return fileName.EndsWith(".dcxml");
-            }
-
-            return false;
-        }
+        
     }
 
     
     [XmlType("file")]
     public class TestFile : TestFileItem {
-        internal static Assembly CurrentAssembly = typeof(TestFile).Assembly;
+        
+        private string _path;
 
-        public Stream Open() {
-            return GetResourceStream(this.Name);
+        internal static Stream GetResourceStream(string resurceName) {
+            var sourceFile = Path.Combine(Environment.CurrentDirectory, "Files", resurceName);
+            return File.OpenRead(sourceFile);
         }
 
-        internal static Stream GetResourceStream(string name) {
-            return CurrentAssembly.GetManifestResourceStream("System.Configuration.Core.Tests.Files." + name);
+        internal void Build(string parent) {
+            var targetFile = Path.Combine(parent, this.Name);
+            if (!File.Exists(targetFile)) {
+                var sourceFile = Path.Combine(Environment.CurrentDirectory, "Files", this.Name);
+                File.Copy(sourceFile, targetFile);
+            }            
+            _path = targetFile;
         }
+
+        
     }
 }

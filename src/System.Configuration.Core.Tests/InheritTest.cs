@@ -6,15 +6,17 @@ namespace System.Configuration.Core.Tests {
 
     [TestClass]
     public class InheritTest {
+        public TestContext TestContext { get; set; }
+        public TestDirectory RootDirectory { get; set; }
 
         [TestInitialize]
         public void Init() {
-            PlatformUtilities.Current = new PlatformTestUtilities(TestDirectory.Create("InheritTest.xml"));
+            this.RootDirectory = TestDirectory.Create(this, "InheritTest.xml");
         }
 
         [TestMethod]
         public void TestInherit() {
-            DcxmlRepository rep = new DcxmlRepository("root");
+            DcxmlRepository rep = new DcxmlRepository(this.RootDirectory.Path);
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
             Window win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "baseWindow", "testPackage"));
             Assert.AreEqual<string>("Hello, World!", win.Text);

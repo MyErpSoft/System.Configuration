@@ -7,14 +7,17 @@ namespace System.Configuration.Core.Tests {
     [TestClass]
     public class BasicTest {
 
+        public TestContext TestContext { get; set; }
+        public TestDirectory RootDirectory { get; set; }
+
         [TestInitialize]
         public void Init() {
-            PlatformUtilities.Current = new PlatformTestUtilities(TestDirectory.Create("BasicTest.xml"));
+            this.RootDirectory = TestDirectory.Create(this, "BasicTest.xml");
         }
 
         [TestMethod]
         public void TestHelloWorld() {
-            DcxmlRepository rep = new DcxmlRepository("root");
+            DcxmlRepository rep = new DcxmlRepository(RootDirectory.Path);
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
             Window win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "frmMain", "testPackage"));
             Assert.AreEqual<string>("Hello, World!", win.Text);

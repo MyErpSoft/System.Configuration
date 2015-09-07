@@ -4,14 +4,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace System.Configuration.Core.Tests {
     [TestClass]
     public class ConverterTest {
+        public TestContext TestContext { get; set; }
+        public TestDirectory RootDirectory { get; set; }
+
         [TestInitialize]
         public void Init() {
-            PlatformUtilities.Current = new PlatformTestUtilities(TestDirectory.Create("ConverterTest.xml"));
+            this.RootDirectory = TestDirectory.Create(this, "ConverterTest.xml");
         }
 
         [TestMethod]
         public void TestConvert() {
-            DcxmlRepository rep = new DcxmlRepository("root");
+            DcxmlRepository rep = new DcxmlRepository(RootDirectory.Path);
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
 
             //string

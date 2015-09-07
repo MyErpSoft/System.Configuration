@@ -1,6 +1,5 @@
-﻿using System.Configuration.Core;
+﻿using System.Configuration.Core.Dcxml;
 using System.Linq;
-using System.Configuration.Core.Dcxml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Configuration.Core.Tests {
@@ -10,11 +9,14 @@ namespace System.Configuration.Core.Tests {
         DcxmlRepository rep1;
         DcxmlRepository rep2;
 
+        public TestContext TestContext { get; set; }
+        public TestDirectory RootDirectory { get; set; }
+
         [TestInitialize]
         public void Init() {
-            PlatformUtilities.Current = new PlatformTestUtilities(TestDirectory.Create("CollectionTest.xml"));
-            rep1 = new DcxmlRepository(@"root\rep1");
-            rep2 = new DcxmlRepository(@"root\rep2",rep1);
+            this.RootDirectory = TestDirectory.Create(this, "CollectionTest.xml");
+            rep1 = new DcxmlRepository(RootDirectory.Path + @"\rep1");
+            rep2 = new DcxmlRepository(RootDirectory.Path + @"\rep2", rep1);
         }
 
         [TestMethod]

@@ -140,6 +140,10 @@ namespace System.Configuration.Core.Dc {
                 objNamespace = this._readContext.Strings[this.Read7BitEncodedInt()];
                 name = this._readContext.Strings[this.Read7BitEncodedInt()];
                 packageName = this._readContext.Strings[this.Read7BitEncodedInt()];
+
+                if (packageName == null) {
+                    packageName = _sourcePackage.Name;
+                }
                 return true;
             }
         }
@@ -220,7 +224,8 @@ namespace System.Configuration.Core.Dc {
 
             //
             for (int i = 0; i < count; i++) {
-                var propertyData = data.Properties[i];
+                var propertyIndex = this.Read7BitEncodedInt();
+                var propertyData = data.Properties[propertyIndex];
                 //property
                 if (propertyData.Property == null) {
                     if (propertyData.Name == ConfigurationObjectPart.BasePropertyInstance.Name) {

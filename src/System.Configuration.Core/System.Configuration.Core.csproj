@@ -44,6 +44,7 @@
     <Compile Include="Dc\DataClasses.cs" />
     <Compile Include="Dc\DcPackage.cs" />
     <Compile Include="Dc\DcPart.cs" />
+    <Compile Include="Dc\DcRepository.cs" />
     <Compile Include="Dc\PackageReadContext.cs" />
     <Compile Include="DifferenceList.cs" />
     <Compile Include="ListDifferenceItem.cs" />

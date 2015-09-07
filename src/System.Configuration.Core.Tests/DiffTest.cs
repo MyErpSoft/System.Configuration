@@ -10,16 +10,18 @@ namespace System.Configuration.Core.Tests {
     /// </summary>
     [TestClass]
     public class DiffTest {
+        public TestContext TestContext { get; set; }
+        public TestDirectory RootDirectory { get; set; }
 
-        [TestInitialize()]
-         public void Initialize() {
-            PlatformUtilities.Current = new PlatformTestUtilities(TestDirectory.Create("DiffTest.xml"));
+        [TestInitialize]
+        public void Init() {
+            this.RootDirectory = TestDirectory.Create(this, "DiffTest.xml");
         }
 
         [TestMethod]
         public void TestDiffValue() {
-            DcxmlRepository rep1 = new DcxmlRepository(@"root\rep1");
-            DcxmlRepository rep2 = new DcxmlRepository(@"root\rep2",rep1);
+            DcxmlRepository rep1 = new DcxmlRepository(this.RootDirectory.Path + @"\rep1");
+            DcxmlRepository rep2 = new DcxmlRepository(this.RootDirectory.Path + @"\rep2",rep1);
 
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep2);
             Window win =(Window)wp.GetObject(new QualifiedName("company.erp.demo", "f1", "testPackage"));

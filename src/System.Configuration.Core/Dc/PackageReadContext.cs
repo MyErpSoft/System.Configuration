@@ -18,6 +18,7 @@ namespace System.Configuration.Core.Dc {
 
             //List<T>的索引是从0开始的，而我们的字符串索引是从1开始的，0预留给null.
             this._strings.Add(null);
+            this.Types.Add(null);
         }
 
         private List<string> _strings;
@@ -32,10 +33,15 @@ namespace System.Configuration.Core.Dc {
     }
 
     internal sealed class ObjectTypeReadData {
+        public ObjectTypeReadData() {
+            this.Properties = new List<ObjectPropertyReadData>();
+            this.Properties.Add(null);
+        }
+
         public IType Type { get; set; }
         public ObjectTypeQualifiedName Name { get; set; }
 
-        public List<ObjectPropertyReadData> Properties { get; } = new List<ObjectPropertyReadData>();
+        public List<ObjectPropertyReadData> Properties { get; }
     }
 
     internal sealed class ObjectPropertyReadData {

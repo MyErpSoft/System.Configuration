@@ -9,7 +9,7 @@ namespace System.Configuration.Core.Dc {
     /// </summary>
     internal sealed class DcPackage : BasicPackage {
 
-        internal DcPackage(string file, Repository repository)
+        internal DcPackage(string file, DcRepository repository)
             : base(PlatformUtilities.Current.GetFileNameWithoutExtension(file), repository) {
             this._file = file;
         }
