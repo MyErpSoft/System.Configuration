@@ -17,13 +17,17 @@ namespace System.Configuration.Core.Dcxml {
             this._data = data;
         }
 
-        protected override ObjectTypeQualifiedName TypeName {
-            get { return _typeName; }
+        private IType _type;
+        /// <summary>
+        /// 返回当前对象的类型信息。
+        /// </summary>
+        public override IType Type {
+            get { return _type; }
         }
 
-        protected override void OpenDataCore(OpenDataContext ctx) {
-            base.OpenDataCore(ctx);
-            var dt = this.Type;
+        protected override void OpenDataCore(ConfigurationRuntime runtime) {
+            var dt = runtime.Binder.BindToType(_typeName);
+            _type = dt;
 
             foreach (var item in _data.Elements()) {
                 var field = dt.GetProperty(item.Name.LocalName);

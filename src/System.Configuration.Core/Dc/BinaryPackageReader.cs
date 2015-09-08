@@ -84,17 +84,22 @@ namespace System.Configuration.Core.Dc {
                 this.Close();
             }
 
-            ////后台线程仍然继续，将数据解包。
-            //try {
-            //    foreach (var item in _allPairs) {
-            //        item.Value.OpenData();怎么办？没有上下文需要的Binder
-            //    }
-            //}
-            //catch(Exception ex) {
-            //    Trace.Write(ex.Message);
-            //    //任何数据的解包失败，都将造成此线程的停止，但不会出现异常。
-            //    //由于IsOpened未设置为true，所以在首次使用时仍然会出现异常。
-            //}
+            //后台线程仍然继续，将数据解包。
+            try {
+                var runtime = _sourcePackage.Runtime;
+
+                foreach (var item in _allPairs) {
+                    var basicPart = item.Value as BasicPart;
+                    if (basicPart != null && !basicPart.IsOpened) {
+                        basicPart.OpenData(runtime);
+                    }
+                }
+            }
+            catch (Exception ex) {
+                Trace.Write(ex.Message);
+                //任何数据的解包失败，都将造成此线程的停止，但不会出现异常。
+                //由于IsOpened未设置为true，所以在首次使用时仍然会出现异常。
+            }
         }
 
         private void ReadObjectTypes() {

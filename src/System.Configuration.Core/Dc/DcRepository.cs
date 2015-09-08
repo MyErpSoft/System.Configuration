@@ -10,10 +10,11 @@ namespace System.Configuration.Core.Dc {
     /// </summary>
     public class DcRepository : Repository {
 
-        public DcRepository(string path) : this(path, null) {
-        }
+        public DcRepository(string path) : this(path, DefaultRuntime, null) { }
 
-        public DcRepository(string path, params Repository[] dependencies) : base(dependencies) {
+        public DcRepository(string path, params Repository[] dependencies) : this(path, DefaultRuntime, dependencies) { }
+
+        public DcRepository(string path, ConfigurationRuntime runtime, params Repository[] dependencies) : base(runtime, dependencies) {
             if (string.IsNullOrEmpty(path)) {
                 Utilities.ThrowArgumentNull(nameof(path));
             }
@@ -28,10 +29,10 @@ namespace System.Configuration.Core.Dc {
             get { return this._path; }
         }
 
-        protected override bool TryGetPackageCore(string packageName, out Package package) {
+        protected override bool TryGetLocalPackageCore(string packageName, out Package package) {
             var packagePath = GetPackagePath(packageName);
             if (GetPackagePathList().Contains(packagePath)) {
-                package = new DcPackage(packagePath, this);
+                package = new DcPackage(packagePath, Runtime);
                 return true;
             }
 
@@ -46,7 +47,7 @@ namespace System.Configuration.Core.Dc {
         /// <returns>一组包含所有包文件的文件路径清单</returns>
         protected virtual HashSet<string> GetPackagePathList() {
             if (_packagePathList == null) {
-                _packagePathList = new HashSet<string>(PlatformUtilities.Current.GetFiles(_path, "*.dc", true),StringComparer.OrdinalIgnoreCase);
+                _packagePathList = new HashSet<string>(PlatformUtilities.Current.GetFiles(_path, "*.dc", true), StringComparer.OrdinalIgnoreCase);
             }
             return _packagePathList;
         }

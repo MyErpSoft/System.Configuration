@@ -9,8 +9,8 @@ namespace System.Configuration.Core.Dc {
     /// </summary>
     internal sealed class DcPackage : BasicPackage {
 
-        internal DcPackage(string file, DcRepository repository)
-            : base(PlatformUtilities.Current.GetFileNameWithoutExtension(file), repository) {
+        internal DcPackage(string file, ConfigurationRuntime runtime)
+            : base(PlatformUtilities.Current.GetFileNameWithoutExtension(file), runtime) {
             this._file = file;
         }
 

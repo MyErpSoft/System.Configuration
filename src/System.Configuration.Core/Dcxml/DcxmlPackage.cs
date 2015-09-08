@@ -5,8 +5,8 @@ namespace System.Configuration.Core.Dcxml {
 
     internal class DcxmlPackage : BasicPackage {
         private string[] _files;
-        public DcxmlPackage(string packageName, DcxmlRepository repository, string[] files)
-            : base(packageName, repository) {
+        public DcxmlPackage(string packageName, ConfigurationRuntime runtime, string[] files)
+            : base(packageName,runtime) {
             this._files = files;
         }
 

@@ -6,10 +6,13 @@ namespace System.Configuration.Core.Dcxml {
     /// 一种为调试时使用的仓库，他直接使用目录作为Repository，然后一级子目录作为Package。
     /// </summary>
     public class DcxmlRepository : Repository {
-        public DcxmlRepository(string path) : this(path, null) {
+        public DcxmlRepository(string path) : this(path,DefaultRuntime, null) {
         }
 
-        public DcxmlRepository(string path, params Repository[] dependencies) : base(dependencies) {
+        public DcxmlRepository(string path, params Repository[] dependencies) : this(path,DefaultRuntime,dependencies) {
+        }
+
+        public DcxmlRepository(string path, ConfigurationRuntime runtime, params Repository[] dependencies) : base(runtime, dependencies) {
             if (string.IsNullOrEmpty(path)) {
                 Utilities.ThrowArgumentNull(nameof(path));
             }
@@ -24,7 +27,7 @@ namespace System.Configuration.Core.Dcxml {
             get { return this._path; }
         }
 
-        protected override bool TryGetPackageCore(string packageName, out Package package) {
+        protected override bool TryGetLocalPackageCore(string packageName, out Package package) {
             //拼接这个字符串，变成子路径，例如在磁盘系统下：
             // _path = "c:\myRepository";
             // packageName = "DemoCompany.DemoPackage"
@@ -42,7 +45,7 @@ namespace System.Configuration.Core.Dcxml {
                 return false;
             }
             else {
-                package = new DcxmlPackage(packageName, this, files);
+                package = new DcxmlPackage(packageName, Runtime, files);
                 return true;
             }
         }

@@ -16,31 +16,24 @@ namespace System.Configuration.Core.Dc {
         public BinaryPackageWriter(Stream output):base(output) {
         }
 
-        public static void ConvertToDc(string filePath, Package sourcePackage, ConfigurationObjectBinder binder) {
+        public static void ConvertToDc(string filePath, Package sourcePackage) {
             using (var stream = PlatformUtilities.Current.Open(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
                 using (var writer = new BinaryPackageWriter(stream)) {
-                    writer.WritePackage(sourcePackage, binder);
+                    writer.WritePackage(sourcePackage);
                     stream.Flush();
                 }
             }
         }
 
-        public void WritePackage(Package sourcePackage, ConfigurationObjectBinder binder) {
+        public void WritePackage(Package sourcePackage) {
             if (sourcePackage == null) {
                 Utilities.ThrowArgumentNull(nameof(sourcePackage));
-            }
-            if (binder == null) {
-                Utilities.ThrowArgumentNull(nameof(binder));
             }
 
             PackageWriteContext ctx = new PackageWriteContext(sourcePackage);
             List<PartData> partDatas = new List<PartData>();
             
             foreach (var part in sourcePackage.GetParts()) {
-                if (!part.Value.IsOpened) {
-                    part.Value.OpenData(new OpenDataContext(binder, new QualifiedName(part.Key, sourcePackage.Name)));
-                }
-                
                 partDatas.Add(new PartData(part.Key,part.Value,ctx));
             }
 

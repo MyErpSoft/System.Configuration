@@ -8,8 +8,8 @@ namespace System.Configuration.Core {
     {
         //一组差量化的包，索引越小的其深度Depth越小，意味着在检索时优先级越低。
         private readonly Package[] _packages;
-        public CombinedPackage(Package[] packages) :
-            base(packages[0].Name,packages[0].Repository){
+        public CombinedPackage(Package[] packages, ConfigurationRuntime runtime) :
+            base(packages[0].Name, runtime) {
             this._packages = packages;
         }
 

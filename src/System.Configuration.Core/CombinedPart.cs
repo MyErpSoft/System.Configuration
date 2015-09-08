@@ -15,14 +15,6 @@ namespace System.Configuration.Core {
         //优先级较高的部件，即Depth较大的仓库中找到的部件。
         private OnlyNextNode<ConfigurationObjectPart> _first;
 
-        protected override void OpenDataCore(OpenDataContext ctx) {
-            var current = _first;
-            do {
-                current.Value.OpenData(ctx);//可能已经被其他workspace解包了，所以调用OpenData而不是OpenDataCore
-                current = current.Next;                
-            } while (current != null);
-        }
-
         /// <summary>
         /// 尝试获取属性的单个值。
         /// </summary>

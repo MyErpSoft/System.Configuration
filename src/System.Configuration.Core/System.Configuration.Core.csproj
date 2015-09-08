@@ -38,6 +38,7 @@
     <Compile Include="CombinedPart.cs" />
     <Compile Include="ConfigurationEntityStorage.cs" />
     <Compile Include="ConfigurationObject.cs" />
+    <Compile Include="ConfigurationRuntime.cs" />
     <Compile Include="Dcxml\UsingCollection.cs" />
     <Compile Include="Dc\BinaryPackageReader.cs" />
     <Compile Include="Dc\BinaryPackageWriter.cs" />
