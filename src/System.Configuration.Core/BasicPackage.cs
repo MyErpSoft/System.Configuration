@@ -33,7 +33,7 @@ namespace System.Configuration.Core {
         private Dictionary<FullName, ConfigurationObjectPart> LoadParts() {
             lock (this) {
                 if (_parts == null) {
-                    Dictionary<FullName, ConfigurationObjectPart> parts = new Dictionary<FullName, ConfigurationObjectPart>(FullName.Comparer);
+                    Dictionary<FullName, ConfigurationObjectPart> parts = new Dictionary<FullName, ConfigurationObjectPart>();
                     var loadedParts = this.LoadPartsCore().GetEnumerator();
                     KeyValuePair<FullName, ConfigurationObjectPart> current;
                     try {

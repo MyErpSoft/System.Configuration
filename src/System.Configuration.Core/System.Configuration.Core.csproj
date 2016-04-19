@@ -45,7 +45,7 @@
     <Compile Include="Dc\DataClasses.cs" />
     <Compile Include="Dc\DcPackage.cs" />
     <Compile Include="Dc\DcPart.cs" />
-    <Compile Include="Dc\DcRepository.cs" />
+    <Compile Include="Dc\DcPackageProvider.cs" />
     <Compile Include="Dc\PackageReadContext.cs" />
     <Compile Include="DifferenceList.cs" />
     <Compile Include="ListDifferenceItem.cs" />
@@ -71,7 +71,7 @@
     <Compile Include="Dcxml\DcxmlFile.cs" />
     <Compile Include="Dcxml\DcxmlPackage.cs" />
     <Compile Include="Dcxml\DcxmlPart.cs" />
-    <Compile Include="Dcxml\DcxmlRepository.cs" />
+    <Compile Include="Dcxml\DcxmlPackageProvider.cs" />
     <Compile Include="ObjectContainer.cs" />
     <Compile Include="OpenDataContext.cs" />
     <Compile Include="ObjectTypeQualifiedName.cs" />
@@ -82,7 +82,7 @@
     <Compile Include="PlatformWinUtilities.cs" />
     <Compile Include="ReferenceEqualityComparer.cs" />
     <Compile Include="Repository.cs" />
-    <Compile Include="RepositoryCollection.cs" />
+    <Compile Include="IPackageProvider.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -14,7 +14,7 @@ namespace System.Configuration.Core.Tests {
 
         [TestMethod]
         public void TestConvert() {
-            DcxmlRepository rep = new DcxmlRepository(RootDirectory.Path);
+            Repository rep = new Repository(RootDirectory.Path);
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
 
             //string

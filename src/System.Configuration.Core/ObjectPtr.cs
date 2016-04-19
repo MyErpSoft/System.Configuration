@@ -23,7 +23,7 @@
         }
         
         public override string ToString() {
-            return this._name == null ? "None" : this._name.ToString();
+            return this._name == QualifiedName.Empty ? "<None>" : this._name.ToString();
         }
 
         public override bool Equals(object obj) {
@@ -32,11 +32,15 @@
                 return other._name == this._name;
             }
 
+            if (obj == null && this._name == QualifiedName.Empty) {
+                return true;
+            }
+
             return false;
         }
 
         public override int GetHashCode() {
-            return this._name == null ? 0 : this._name.GetHashCode();
+            return this._name == QualifiedName.Empty ? 0 : this._name.GetHashCode();
         }
 
         public static bool operator ==(ObjectPtr x, ObjectPtr y) {

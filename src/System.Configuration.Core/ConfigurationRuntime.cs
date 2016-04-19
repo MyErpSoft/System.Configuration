@@ -1,4 +1,5 @@
-﻿using System.Configuration.Core.Metadata;
+﻿using System.Collections.ObjectModel;
+using System.Configuration.Core.Metadata;
 
 namespace System.Configuration.Core {
 
@@ -23,6 +24,10 @@ namespace System.Configuration.Core {
                 Utilities.ThrowArgumentNull(nameof(binder));
             }
             this._binder = binder;
+            this._packageProviders = new IPackageProvider[] {
+                new Dcxml.DcxmlPackageProvider(),
+                new Dc.DcPackageProvider()
+            };
         }
 
         private readonly ConfigurationObjectBinder _binder;
@@ -31,6 +36,14 @@ namespace System.Configuration.Core {
         /// </summary>
         public ConfigurationObjectBinder Binder {
             get { return _binder; }
+        }
+
+        private readonly IPackageProvider[] _packageProviders;
+        /// <summary>
+        /// 返回当前所有可用的PackageProvider，由于搜索Package,默认初始化了内置的Dcxml和Dc两种格式。
+        /// </summary>
+        public IPackageProvider[] GetProviders() {
+            return _packageProviders;//todo 需要copy
         }
     }
 }

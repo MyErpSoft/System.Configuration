@@ -3,6 +3,7 @@ using System.Configuration.Core.Collections;
 using System.Configuration.Core.Metadata;
 using System.Globalization;
 using System.Xml.Linq;
+using static System.Configuration.Core.Dcxml.DcxmlPackage;
 
 namespace System.Configuration.Core.Dcxml {
 
@@ -41,7 +42,7 @@ namespace System.Configuration.Core.Dcxml {
             }
 
             //检索 x:base 设置，设置到Base属性中。
-            var baseAttribute = _data.Attribute(DcxmlRepository.DcxmlName_Base);
+            var baseAttribute = _data.Attribute(DcxmlName_Base);
             if (baseAttribute != null) {
                 //如果未设置，代表没有设置策略。如果有设置，有可能是空
                 SetLocalValue(BasePropertyInstance, new ObjectPtr(_file.Usings.GetQualifiedName(baseAttribute.Value)));
@@ -66,7 +67,7 @@ namespace System.Configuration.Core.Dcxml {
         private object GetListItemValue(IProperty field, XElement item) {
             //对象指针，要包装成指针对象。
             //ex: <Button x:ref="btnOK"/>
-            var refAttribute = item.Attribute(DcxmlRepository.DcxmlName_Ref);
+            var refAttribute = item.Attribute(DcxmlName_Ref);
             if (refAttribute != null) {
                 var refValue = refAttribute.Value;
                 if (string.IsNullOrWhiteSpace(refValue)) {
@@ -98,7 +99,7 @@ namespace System.Configuration.Core.Dcxml {
         private static ListDifferenceAction GetListItemAction(IProperty field, XElement item) {
             var action = ListDifferenceAction.Add;
             //ex: <Button x:action="remove"/>
-            var actionAttribute = item.Attribute(DcxmlRepository.DcxmlName_ListAction); //默认add
+            var actionAttribute = item.Attribute(DcxmlName_ListAction); //默认add
             if (actionAttribute != null) {
                 var actionValue = actionAttribute.Value;
                 if (string.Equals(actionValue, "remove", StringComparison.OrdinalIgnoreCase)) {
@@ -119,7 +120,7 @@ namespace System.Configuration.Core.Dcxml {
         private object GetItemValue(XElement item,IProperty field) {
             //如果是对象指针，要包装成指针对象。
             //ex: <BackgroundImage x:ref="imgSky"/>
-            var refAttribute = item.Attribute(DcxmlRepository.DcxmlName_Ref);
+            var refAttribute = item.Attribute(DcxmlName_Ref);
             if (refAttribute != null) {
                 return new ObjectPtr(_file.Usings.GetQualifiedName(refAttribute.Value));
             }

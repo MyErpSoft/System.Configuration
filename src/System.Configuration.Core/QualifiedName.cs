@@ -3,68 +3,83 @@
     /// <summary>
     /// 表示一个配置对象的识别键，包含所在的组装件、命名空间和名称。
     /// </summary>
-    public class QualifiedName {
-
+    public struct QualifiedName {
+        /// <summary>结构不允许为null，所以这里内部使用了Empty.</summary>
+        internal readonly static QualifiedName Empty = new QualifiedName(null, null, null);
+         
         public QualifiedName(string objNamespace, string name, string packageName)
             : this(new FullName(objNamespace, name), packageName) {
         }
 
         public QualifiedName(FullName fullName, string packageName) {
-            this._fullName = fullName;
-            this._packageName = packageName;
+            this.FullName = fullName;
+            this.PackageName = packageName;
         }
 
-        private readonly string _packageName;
         /// <summary>
         /// 返回所在的包。
         /// </summary>
-        public string PackageName {
-            get { return _packageName; }
-        }
+        public readonly string PackageName;
 
-        private readonly FullName _fullName;
         /// <summary>
         /// 返回命名空间和名称
         /// </summary>
-        public FullName FullName {
-            get { return _fullName; }
-        }
+        public readonly FullName FullName;
 
+        /// <summary>
+        /// 输出调试用的字符串，类似 mynamespace.name,packageName 这样的形式。
+        /// </summary>
+        /// <returns>一个字符串。</returns>
         public override string ToString() {
-            return this._fullName.ToString() + "," + this.PackageName;
+            return string.IsNullOrEmpty(this.PackageName) ? this.FullName.ToString() :
+                (this.FullName.ToString() + "," + this.PackageName);
         }
 
+        /// <summary>
+        /// 判断两个对象是否相等，QualifiedName，那么判断FullName和PackageName是否都相等。注意：PackageName不区分大小写。
+        /// </summary>
+        /// <param name="obj">要判断的对象。</param>
+        /// <returns>如果相等返回true，否则false.</returns>
         public override bool Equals(object obj) {
-            if (object.ReferenceEquals(this,obj)) {
-                return true;
+            if (obj is QualifiedName) {
+                QualifiedName other = (QualifiedName)obj;
+                return this.FullName == other.FullName && string.Equals(this.PackageName, other.PackageName, StringComparison.OrdinalIgnoreCase);
             }
 
-            QualifiedName other = obj as QualifiedName;
-            if (other != null) {
-                return this._fullName == other._fullName && this._packageName == other._packageName;
+            //也支持对null的相等判断
+            if (obj == null && this == Empty) {
+                return true;
             }
 
             return false;
         }
 
+        /// <summary>
+        /// 返回FullName和PackageName组合后的HashCode。
+        /// </summary>
+        /// <returns>一个int32固定值。</returns>
         public override int GetHashCode() {
-            return this._fullName.GetHashCode() ^ (this._packageName == null ? 0 : this._packageName.GetHashCode());
+            return this.FullName.GetHashCode() ^ (this.PackageName == null ? 0 : this.PackageName.ToUpperInvariant().GetHashCode());
         }
 
+        /// <summary>
+        /// 判断两个对象是否相等，如果FullName和PackageName都相等。注意：PackageName不区分大小写。，则返回true。。
+        /// </summary>
+        /// <param name="x">要比较的对象。</param>
+        /// <param name="y">要比较的第二个对象。</param>
+        /// <returns>返回是否相等。</returns>
         public static bool operator ==(QualifiedName x, QualifiedName y) {
-            if (object.ReferenceEquals(x,y)) {
-                return true;
-            }
-
-            if ((object)x == null || (object)y == null) {
-                return false;
-            }
-
-            return x._fullName == y._fullName && x._packageName == y._packageName;
+            return x.FullName == y.FullName && string.Equals(x.PackageName, y.PackageName, StringComparison.OrdinalIgnoreCase);
         }
 
+        /// <summary>
+        /// 判断两个对象是否不相等，如果FullName和PackageName任何一个不相等。注意：PackageName不区分大小写。，则返回true。。
+        /// </summary>
+        /// <param name="x">要比较的对象。</param>
+        /// <param name="y">要比较的第二个对象。</param>
+        /// <returns>返回是否不相等。</returns>
         public static bool operator !=(QualifiedName x, QualifiedName y) {
-            return !(x == y);
+            return x.FullName != y.FullName || !string.Equals(x.PackageName, y.PackageName, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

@@ -92,7 +92,7 @@ namespace System.Configuration.Core.Dcxml {
 
         internal QualifiedName GetQualifiedName(string value) {
             if (string.IsNullOrEmpty(value)) {
-                return null;
+                return QualifiedName.Empty;
             }
 
             //ex: a:BasicForm

@@ -20,6 +20,8 @@ namespace System.Configuration.Core {
 
         public abstract string[] GetFiles(string path, string searchPattern, bool topDirectoryOnly);
 
+        public abstract string[] GetDirectories(string path, string searchPattern, bool topDirectoryOnly);
+
         public virtual Stream Open(string path, FileMode mode) {
             return Open(path, mode, (mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite), FileShare.None);
         }

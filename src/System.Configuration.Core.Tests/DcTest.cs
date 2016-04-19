@@ -20,7 +20,7 @@ namespace System.Configuration.Core.Tests {
         
         [TestMethod]
         public void TestWriteAndRead() {
-            DcxmlRepository rep = new DcxmlRepository(RootDirectory.Path);
+            Repository rep = new Repository(RootDirectory.Path);
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
 
             string file = Path.Combine(RootDirectory.Path, "testPackage.dc");
@@ -33,7 +33,7 @@ namespace System.Configuration.Core.Tests {
 
         [TestMethod]
         public void TestChangePackageName() {
-            DcxmlRepository rep = new DcxmlRepository(RootDirectory.Path);
+            Repository rep = new Repository(RootDirectory.Path);
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
 
             //任何包的内容，都不能包含包自己的名称信息，例如二进制的包起名称来自文件名。
@@ -47,7 +47,7 @@ namespace System.Configuration.Core.Tests {
         
         private void AssertValues(string packageName) {
             //读取
-            DcRepository rep2 = new DcRepository(RootDirectory.Path);
+            Repository rep2 = new Repository(RootDirectory.Path);
             var wp = new ConfigurationWorkspace(rep2);
 
             Button btnOK = (Button)wp.GetObject(new QualifiedName("company.erp.demo", "btnOK", packageName));
@@ -69,7 +69,7 @@ namespace System.Configuration.Core.Tests {
         public void TestBigFile() {
             CreateBigSourceFile();
 
-            DcxmlRepository rep = new DcxmlRepository(RootDirectory.Path);
+            Repository rep = new Repository(RootDirectory.Path);
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
 
             string file = Path.Combine(RootDirectory.Path, "BigPackage.dc");
@@ -80,7 +80,7 @@ namespace System.Configuration.Core.Tests {
 
             System.Diagnostics.Stopwatch w = new Diagnostics.Stopwatch();
             w.Start();
-            DcRepository rep2 = new DcRepository(RootDirectory.Path);
+            Repository rep2 = new Repository(RootDirectory.Path);
             var wp2 = new ConfigurationWorkspace(rep2);
 
             for (int i = 0; i < 10000; i++) {

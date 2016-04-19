@@ -3,18 +3,28 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 
 namespace System.Configuration.Core {
 
     /// <summary>
     /// 类似Nuget的Repository，或者.net的Framework的概念，是Package的承载容器。
     /// </summary>
-    public abstract class Repository {
+    public class Repository {
 
-        protected Repository() : this(DefaultRuntime, null) {
+        #region 构造函数
+        public Repository(string path) : this(path, DefaultRuntime, null) {
         }
-        
-        protected Repository(ConfigurationRuntime runtime,params Repository[] dependencies) {
+
+        public Repository(string path, params Repository[] dependencies) : this(path, DefaultRuntime, dependencies) {
+        }
+
+        public Repository(string path, ConfigurationRuntime runtime, params Repository[] dependencies) {
+            if (string.IsNullOrEmpty(path)) {
+                Utilities.ThrowArgumentNull(nameof(path));
+            }
+            this._path = path;
+
             if (runtime == null) {
                 Utilities.ThrowArgumentNull(nameof(runtime));
             }
@@ -30,8 +40,8 @@ namespace System.Configuration.Core {
             }
 
             this._loadedPackages = new ObjectContainer<string, Package>(this.LoadPackage);
-            this._loadedLocalPackages = new ConcurrentDictionary<string, Package>();
         }
+        #endregion
 
         #region 仓库管理
         private int? _depth;
@@ -101,6 +111,14 @@ namespace System.Configuration.Core {
         /// </summary>
         public ConfigurationRuntime Runtime {
             get { return this._runtime; }
+        }
+
+        private string _path;
+        /// <summary>
+        /// 返回仓库所在的路径。
+        /// </summary>
+        public string RootPath {
+            get { return this._path; }
         }
 
         private static ConfigurationRuntime _defaultRuntime = new ConfigurationRuntime();
@@ -176,37 +194,88 @@ namespace System.Configuration.Core {
             return null;
         }
 
-        private readonly ConcurrentDictionary<string, Package> _loadedLocalPackages;
+        /// <summary>本仓库所有的本地Package清单</summary>
+        // 注意与_loadedPackages很不同：
+        // _localPackages是本地文件所有Package（可能没有加载），而_loadedPackages是已经加载过的。
+        private Dictionary<string, PackageCacheItem> _localPackages;
         /// <summary>
         /// 读取一个指定名称的本地包对象。
         /// </summary>
         /// <param name="packageName">要加载的包对象名称。</param>
         /// <returns>一个新的包对象。如果没有此名称的包将</returns>       
         protected bool TryGetLocalPackage(string packageName, out Package package) {
-            //尝试从缓存中找到是否有存在的本地Package。
-            if (_loadedLocalPackages.TryGetValue(packageName,out package)) {
-                return true;
+            //检查是否存在本地package的清单缓存，这里使用到无锁设计。
+            var localPackages = _localPackages;
+            if (localPackages == null) {
+                Interlocked.CompareExchange(ref _localPackages, GetLocalPackages(), localPackages);
+                localPackages = _localPackages;
             }
 
-            //如果
-            if (TryGetLocalPackageCore(packageName,out package)) {
-                if (_loadedLocalPackages.TryAdd(packageName,package)) {
-                    return true;
-                }
-
-                //已经被另外的线程抢先注册了，使用之前的。
-                package = _loadedLocalPackages[packageName];
-                return true;
+            PackageCacheItem cacheItem;
+            if (localPackages.TryGetValue(packageName, out cacheItem)) {
+                return cacheItem.TryGetPackage(_path, _runtime, out package);
             }
 
+            package = null;
             return false;
         }
 
+        private Dictionary<string, PackageCacheItem> GetLocalPackages() {
+            //注意，PackageName是忽略大小写的。
+            var dict = new Dictionary<string, PackageCacheItem>(StringComparer.OrdinalIgnoreCase);
+            var providers = _runtime.GetProviders();
+            foreach (var provider in providers) {
+                var items = provider.GetPackageNames(_path);
+                if (items != null) {
+                    foreach (var item in items) {
+                        //当同一个仓库，存在两个相同名称的Package时，会优先保留Provider靠前的那个。
+                        //例如在某个仓库中，包含Dcxml形式的目录，也包含对应的dc文件，我们将仅保留dcxml形式，这也为调试提供了方便。
+                        if (!string.IsNullOrEmpty(item) && !dict.ContainsKey(item)) {
+                            dict.Add(item, new PackageCacheItem(item, provider));
+                        }
+                    }
+                }
+            }
+
+            return dict;
+        }
+
+        private sealed class PackageCacheItem {
+            public readonly string Name;
+            public readonly IPackageProvider Provider;
+            private Package _package;
+
+            public PackageCacheItem(string name, IPackageProvider provider) {
+                this.Name = name;
+                this.Provider = provider;
+            }
+
+            public bool TryGetPackage(string path, ConfigurationRuntime runtime, out Package package) {
+                if (_package != null) {
+                    package = _package;
+                    return true;
+                }
+
+                lock (this) {
+                    if (_package == null) {
+                        if (Provider.TryGetLocalPackage(path, Name, runtime, out package)) {
+                            _package = package;
+                        }
+                    }
+
+                    package = _package;
+                    return package != null;
+                }
+            }
+        }
+
         /// <summary>
-        /// 读取一个指定名称的包对象。
+        /// 返回调试时需要的信息，包括库所在的路径
         /// </summary>
-        /// <param name="packageName">要加载的包对象名称。</param>
-        /// <returns>一个新的包对象。如果没有此名称的包将</returns>       
-        protected abstract bool TryGetLocalPackageCore(string packageName, out Package package);
+        /// <returns>一个描述字符串。</returns>
+        public override string ToString() {
+            return "Repository:" + this._path;
+        }
+
     }
 }

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using static System.Configuration.Core.Dcxml.DcxmlRepository;
+using static System.Configuration.Core.Dcxml.DcxmlPackage;
 
 namespace System.Configuration.Core.Dcxml {
 

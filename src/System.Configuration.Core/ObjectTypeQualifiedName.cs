@@ -22,15 +22,19 @@
     /// <summary>
     /// 定义了类型信息的检索名称
     /// </summary>
-    public sealed class ObjectTypeQualifiedName : QualifiedName {
+    public sealed class ObjectTypeQualifiedName {
 
         public ObjectTypeQualifiedName(string providerName, string objNamespace, string name, string packageName)
-            : this(providerName, new FullName(objNamespace, name), packageName) {
+            : this(providerName, new QualifiedName(new FullName(objNamespace, name), packageName)) {
         }
 
         public ObjectTypeQualifiedName(string providerName, FullName fullName, string packageName)
-            : base(fullName, packageName) {
+            : this(providerName, new QualifiedName(fullName, packageName)) {
+        }
+
+        public ObjectTypeQualifiedName(string providerName, QualifiedName qualifiedName) {
             this._providerName = providerName;
+            this._qualifiedName = qualifiedName;
         }
 
         private readonly string _providerName;
@@ -39,6 +43,42 @@
         /// </summary>
         public string ProviderName {
             get { return _providerName; }
+        }
+
+        private readonly QualifiedName _qualifiedName;
+        /// <summary>
+        /// 返回所在的包。
+        /// </summary>
+        public string PackageName {
+            get { return _qualifiedName.PackageName; }
+        }
+        
+        /// <summary>
+        /// 返回命名空间和名称
+        /// </summary>
+        public FullName FullName {
+            get { return this._qualifiedName.FullName; }
+        }
+
+        /// <summary>
+        /// 返回命名空间
+        /// </summary>
+        public string Namespace {
+            get { return this._qualifiedName.FullName.Namespace; }
+        }
+
+        /// <summary>
+        /// 返回名称。
+        /// </summary>
+        public string Name {
+            get { return this._qualifiedName.FullName.Namespace; }
+        }
+
+        /// <summary>
+        /// 返回对象识别的完整对象。
+        /// </summary>
+        public QualifiedName QualifiedName {
+            get { return this._qualifiedName; }
         }
 
         public static ObjectTypeQualifiedName CreateWithoutName(string str) {
@@ -94,5 +134,62 @@
         }
 
         //注意：此信息不参与相等判断，无论来源哪里，都使用标准的相等判断。
+        /// <summary>
+        /// 返回此类型的字符串描述，注意注意
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() {
+            var qn = this._qualifiedName.ToString();
+            return string.IsNullOrEmpty(qn) ? qn : this._providerName + ":" + qn; 
+        }
+
+        public override bool Equals(object obj) {
+            if (object.ReferenceEquals(this, obj)) {
+                return true;
+            }
+
+            ObjectTypeQualifiedName qn = obj as ObjectTypeQualifiedName;
+            if (qn != null) {
+                return qn._qualifiedName == this._qualifiedName;
+            }
+
+            if (obj is QualifiedName) {
+                QualifiedName other = (QualifiedName)obj;
+                return other == this._qualifiedName;
+            }
+
+            if (obj == null && this._qualifiedName == QualifiedName.Empty) {
+                return true;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode() {
+            return this._qualifiedName.GetHashCode();
+        }
+
+        public static bool operator ==(ObjectTypeQualifiedName x, QualifiedName y) {
+            QualifiedName x1 = ((object)x == null ? QualifiedName.Empty : x._qualifiedName);
+            return x1 == y;
+        }
+
+        public static bool operator !=(ObjectTypeQualifiedName x, QualifiedName y) {
+            return !(x == y);
+        }
+
+        public static bool operator ==(ObjectTypeQualifiedName x, ObjectTypeQualifiedName y) {
+            if (object.ReferenceEquals(x, y)) {
+                return true;
+            }
+
+            QualifiedName x1 = ((object)x == null ? QualifiedName.Empty : x._qualifiedName);
+            QualifiedName y1 = ((object)y == null ? QualifiedName.Empty : y._qualifiedName);
+            return x1 == y1;
+        }
+        
+        public static bool operator !=(ObjectTypeQualifiedName x, ObjectTypeQualifiedName y) {
+            return !(x == y);
+        }
     }
 }

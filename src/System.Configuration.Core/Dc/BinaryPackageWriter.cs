@@ -233,7 +233,7 @@ namespace System.Configuration.Core.Dc {
         }
 
         private void Write(ObjectTypeQualifiedName name, PackageWriteContext ctx) {
-            this.Write((QualifiedName)name, ctx);
+            this.Write(name.QualifiedName, ctx);
 
             if (name != null) {
                 this.Write7BitEncodedInt(ctx.StringDict.GetId(name.ProviderName));

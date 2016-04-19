@@ -43,7 +43,7 @@ namespace System.Configuration.Core.Metadata {
 
             if (string.IsNullOrEmpty(name.ProviderName) || name.ProviderName == ClrBinderProviderName) {
                 //todo:安全性检测，不然配置文件可以任意创建一个对象并设置其属性值。
-                Type dt = Type.GetType(name.ToString(), true);
+                Type dt = Type.GetType(name.QualifiedName.ToString(), true);
                 type = (IType)Clr.ClrType.GetClrType(dt);
                 return true;
             }

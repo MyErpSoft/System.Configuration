@@ -17,7 +17,7 @@ namespace System.Configuration.Core.Tests {
 
         [TestMethod]
         public void TestHelloWorld() {
-            DcxmlRepository rep = new DcxmlRepository(RootDirectory.Path);
+            Repository rep = new Repository(RootDirectory.Path);
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
             Window win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "frmMain", "testPackage"));
             Assert.AreEqual<string>("Hello, World!", win.Text);

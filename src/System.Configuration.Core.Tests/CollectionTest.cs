@@ -6,8 +6,8 @@ namespace System.Configuration.Core.Tests {
 
     [TestClass]
     public class CollectionTest {
-        DcxmlRepository rep1;
-        DcxmlRepository rep2;
+        Repository rep1;
+        Repository rep2;
 
         public TestContext TestContext { get; set; }
         public TestDirectory RootDirectory { get; set; }
@@ -15,8 +15,8 @@ namespace System.Configuration.Core.Tests {
         [TestInitialize]
         public void Init() {
             this.RootDirectory = TestDirectory.Create(this, "CollectionTest.xml");
-            rep1 = new DcxmlRepository(RootDirectory.Path + @"\rep1");
-            rep2 = new DcxmlRepository(RootDirectory.Path + @"\rep2", rep1);
+            rep1 = new Repository(RootDirectory.Path + @"\rep1");
+            rep2 = new Repository(RootDirectory.Path + @"\rep2", rep1);
         }
 
         [TestMethod]

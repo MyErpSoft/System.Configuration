@@ -35,7 +35,7 @@ namespace System.Configuration.Core {
         /// <param name="key">要查询的对象标识</param>
         /// <returns>此键关联的一个配置对象</returns>
         public ConfigurationObject GetConfigurationObject(QualifiedName key) {
-            if ((object)key == null) {
+            if (key == QualifiedName.Empty) {
                 return null;
             }
 
@@ -58,6 +58,11 @@ namespace System.Configuration.Core {
         }
 
         private ObjectPart LoadObject(QualifiedName key) {
+            if (string.IsNullOrEmpty(key.PackageName)) {
+                Utilities.ThrowApplicationException(string.Format(CultureInfo.CurrentCulture,
+                        "未指定明确的PackageName：{0}", key));
+            }
+
             //从仓库获取Package，当出现多个包时仓库会包装成一个虚拟的包
             var package = this._repository.GetPackage(key.PackageName);
 
