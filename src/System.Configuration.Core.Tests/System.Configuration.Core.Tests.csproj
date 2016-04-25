@@ -58,6 +58,7 @@
     <Compile Include="DiffTest.cs" />
     <Compile Include="InheritTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReadOnlyKeyedCollectionTest.cs" />
     <Compile Include="TestDirectory.cs" />
     <Compile Include="BasicTest.cs" />
     <Compile Include="TestClasses.cs" />

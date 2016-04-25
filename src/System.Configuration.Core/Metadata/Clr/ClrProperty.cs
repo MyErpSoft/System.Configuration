@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Threading;
 
 namespace System.Configuration.Core.Metadata.Clr {
 
@@ -24,7 +25,7 @@ namespace System.Configuration.Core.Metadata.Clr {
         public IType PropertyType {
             get {
                 if (_propertyType == null) {
-                    _propertyType = ClrType.GetClrType(this.ClrMapping.PropertyType);
+                    Interlocked.CompareExchange(ref _propertyType, ClrType.GetClrType(this.ClrMapping.PropertyType), null);
                 }
 
                 return this._propertyType;

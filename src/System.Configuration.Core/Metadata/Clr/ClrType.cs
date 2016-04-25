@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
+using System.Linq;
+using System.Threading;
 
 namespace System.Configuration.Core.Metadata.Clr {
 
@@ -62,7 +64,7 @@ namespace System.Configuration.Core.Metadata.Clr {
             }
 
             Utilities.ThrowKeyNotFoundException(string.Format(CultureInfo.CurrentCulture,
-                Properties.Resources.KeyNotFoundException, this.Name, name));
+                Core.Properties.Resources.KeyNotFoundException, this.Name, name));
             return null;
         }
 
@@ -80,19 +82,43 @@ namespace System.Configuration.Core.Metadata.Clr {
             }
 
             //从已加载的集合中获取         
-            if (_properties != null && _properties.TryGetValue(name, out property)) {
-                return true;
+            return Properties.TryGetValue(name, out property);
+        }
+
+        private PropertyCollection Properties {
+            get {
+                if (_properties == null) {
+                    Interlocked.CompareExchange(ref _properties, CreateProperties(), null);
+                }
+
+                return _properties;
+            }
+        }
+
+        private PropertyCollection CreateProperties() {
+            //获取基类，这样可用重用基类的属性描述符。
+            Dictionary<string, ClrProperty> properties;
+            if (this.ClrMapping.BaseType != typeof(object)) {
+                var baseType = GetClrType(this.ClrMapping.BaseType); 
+                properties = new Dictionary<string, ClrProperty>(baseType.Properties.Count,StringComparer.Ordinal);
+                foreach (var item in baseType.Properties) {
+                    properties.Add(item.Name,item);
+                }
+            }
+            else {
+                properties = new Dictionary<string, ClrProperty>(StringComparer.Ordinal);
             }
 
-            //反射获取成员信息。
-            var clrMemberInfo = GetClrMember(name);
-            if (clrMemberInfo == null) {
-                property = null;
-                return false;
+            //获取自身的属性描述符，注意： GetClrMembers仅仅返回当前类型声明的属性。
+            var currentProperties = from clrProperty in GetClrMembers()
+                                    select CreatePropertyMetadata(clrProperty);
+            foreach (var item in currentProperties) {
+                if (item != null) {//有可能CreatePropertyMetadata返回null，表示过滤此属性。
+                    properties[item.Name] = item; //当派生类 override 属性时，需要冲掉基类的处理。
+                }
             }
 
-            //加入缓存
-            return this.TryGetPropertyCore(clrMemberInfo, out property);
+            return new PropertyCollection(properties);
         }
 
         /// <summary>
@@ -100,36 +126,8 @@ namespace System.Configuration.Core.Metadata.Clr {
         /// </summary>
         /// <param name="name">要获取的字段或属性的名称</param>
         /// <returns>如果找到并确认公开，返回其实例，否则返回null.</returns>
-        protected virtual MemberInfo GetClrMember(string name) {
-            return this.ClrMapping.GetProperty(name,
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-        }
-
-        private bool TryGetPropertyCore(MemberInfo clrMember, out ClrProperty property) {
-            //如果成员来自基类，那么应该使用基类的对象，这样可以节约Member对象的数量。
-            lock (this) {
-                if (_properties != null && _properties.TryGetValue(clrMember.Name, out property)) {
-                    return true;
-                }
-
-                //如果成员定义在基类，那么应该从基类获取，这样可以大大减少Property的描述对象
-                var declaringType = clrMember.DeclaringType;
-                if (declaringType != this.ClrMapping) {
-                    //这里调用TryGetPropertyCore，目的是减少一次反射，由于TryGetPropertyCore第一句话还会检查缓存，所以还是会使用缓存的。
-                    if (!ClrType.GetClrType(declaringType).TryGetPropertyCore(clrMember, out property)) {
-                        return false; //基类可能认为此属性不适合公开
-                    }
-                }
-                else {
-                    property = this.CreatePropertyMetadata(clrMember);
-                }
-
-                if (_properties == null) {
-                    _properties = new PropertyCollection();
-                }
-                _properties.Add(property);
-                return true;
-            }
+        protected virtual IEnumerable<MemberInfo> GetClrMembers() {
+            return this.ClrMapping.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
         }
 
         /// <summary>
@@ -137,13 +135,13 @@ namespace System.Configuration.Core.Metadata.Clr {
         /// </summary>
         /// <param name="clrMember">一个clr成员</param>
         /// <returns>创建成功的成员</returns>
-        protected ClrProperty CreatePropertyMetadata(MemberInfo clrMember) {
+        protected virtual ClrProperty CreatePropertyMetadata(MemberInfo clrMember) {
             PropertyInfo p = clrMember as PropertyInfo;
             if (p != null) {
                 return new ClrProperty(p);
             }
             else {
-                throw new NotSupportedException();
+                return null;
             }
         }
 
@@ -154,7 +152,7 @@ namespace System.Configuration.Core.Metadata.Clr {
         /// <returns>一个转换器实例。</returns>
         public TypeConverter GetConverter() {
             if (_converter == null) {
-                _converter = TypeDescriptor.GetConverter(this.ClrMapping);
+                Interlocked.CompareExchange(ref _converter, TypeDescriptor.GetConverter(this.ClrMapping), null);
             }
 
             return _converter;
@@ -169,27 +167,11 @@ namespace System.Configuration.Core.Metadata.Clr {
         }
 
         private sealed class PropertyCollection : ReadOnlyKeyedCollection<string, ClrProperty> {
-            public PropertyCollection() : base(null) {
+            public PropertyCollection(Dictionary<string,ClrProperty> properties) : base(properties) {
             }
 
             protected override string GetKeyForItem(ClrProperty item) {
                 return item.Name;
-            }
-
-            /// <summary>
-            /// Allows a derived class to add data to the collection.
-            /// </summary>
-            /// <param name="items">To add a collection of elements</param>
-            internal void AddRange(IEnumerable<ClrProperty> items) {
-                InsertItems(items);
-            }
-
-            /// <summary>
-            /// Allows a derived class to add data.
-            /// </summary>
-            /// <param name="item">The element to be added.</param>
-            internal void Add(ClrProperty item) {
-                InsertItem(item);
             }
         }
     }
