@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace System.Configuration.Core.Metadata.Clr {
 
+    /// <summary>
+    /// 使用IType接口来描述.net运行时类型(Type)。
+    /// </summary>
     public class ClrType : MemberMetadataBase<Type>, IType {
 
         #region ClrType
@@ -15,22 +18,26 @@ namespace System.Configuration.Core.Metadata.Clr {
         private readonly static ConcurrentDictionary<Type, ClrType> _entityTypeCaches =
             new ConcurrentDictionary<Type, ClrType>();
 
+        /// <summary>
+        /// 获取一个使用ClrType描述的Type实例。
+        /// </summary>
+        /// <param name="clrType">要检索的Type实例。</param>
+        /// <returns>一个ClrType实例。</returns>
         public static ClrType GetClrType(Type clrType) {
             if (null == clrType) {
                 return null;
             }
 
-            ClrType entityType;
             if ((clrType.Assembly == null) || (clrType.Assembly.IsDynamic)) {
-                entityType = new ClrType(clrType);
-                return entityType;
+                return Parse(clrType);
             }
 
-            //在并发环境中，同一个clrType可能造成多次调用CreateEntityType，但仅仅采纳一个值，并没有副作用。
+            //在并发环境中，同一个clrType可能造成多次调用Parse，但仅仅采纳一个值，并没有副作用。
             return _entityTypeCaches.GetOrAdd(clrType, Parse);
         }
 
-        public static ClrType Parse(Type clrType) {
+        //暂时还不打算开放自定义的ClrType的派生实现，等有需求时才公开且允许外界重载。
+        private static ClrType Parse(Type clrType) {
             return new ClrType(clrType);
         }
         #endregion
@@ -158,6 +165,8 @@ namespace System.Configuration.Core.Metadata.Clr {
             return _converter;
         }
 
+        #region IType
+        
         IProperty IType.GetProperty(string name) {
             return this.GetProperty(name);
         }
@@ -174,5 +183,8 @@ namespace System.Configuration.Core.Metadata.Clr {
                 return item.Name;
             }
         }
+
+        #endregion
+
     }
 }
