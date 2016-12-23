@@ -49,7 +49,7 @@ namespace System.Configuration.Core {
         #endregion
 
        #region Open
-        private bool _isOpened;
+        private volatile bool _isOpened; 
 
         internal void OpenData(ConfigurationRuntime runtime) {
             if (!_isOpened) {

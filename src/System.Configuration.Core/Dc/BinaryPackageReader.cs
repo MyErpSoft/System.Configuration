@@ -38,10 +38,17 @@ namespace System.Configuration.Core.Dc {
                 //3
                 _allPairs = this.ReadObjectIds();
 
-                //至此，当前线程的读取任务完成，可以返回了。我们将在另外一个线程下继续读取数据。
-                Thread readOtherThread = new Thread(this.ReadOther);
-                readOtherThread.Name = "Read Package " + _sourcePackage.Name;
-                readOtherThread.Start();
+                //开启异步线程也是有消耗的，如果数据量很小，可能还不如直接读取带来更好的性能。
+                if (_allPairs.Length < 128) {
+                    this.ReadOther(false);
+                }
+                else {
+                    //至此，当前线程的读取任务完成，可以返回了。我们将在另外一个线程下继续读取数据。
+                    //Thread readOtherThread = new Thread(this.ReadOtherAsyn);
+                    //readOtherThread.Name = "Read Package " + _sourcePackage.Name;
+                    //readOtherThread.Start();
+                    System.Threading.Tasks.Task.Run(new Action(this.ReadOtherAsyn));
+                }
 
                 return _allPairs;
             }
@@ -52,7 +59,11 @@ namespace System.Configuration.Core.Dc {
             }
         }
 
-        private void ReadOther() {
+        private void ReadOtherAsyn() {
+            ReadOther(true);
+        }
+
+        private void ReadOther(bool isAsynchronous) {
             try {
                 //4
                 this.ReadStrings();
@@ -64,26 +75,37 @@ namespace System.Configuration.Core.Dc {
                 this.ReadObjects();
             }
             catch (Exception ex) {
-                _sourcePackage.ReadDataException = ex;
-                //当出现异常时，由于是后台线程，如果立即抛出异常，
-                // * 可能没有人捕获，造成程序崩溃；
-                // * 造成DcPart.OpenData永远等待或超时。
-                // 所以这里将数据填充一个空的。
-                byte[] emptyData = new byte[0];
-                foreach (var item in _allPairs) {
-                    DcPart part = (DcPart)item.Value;
-                    if (part._data == null) {
-                        part._data = emptyData;
+                if (isAsynchronous) { //异步模式
+                    _sourcePackage.ReadDataException = ex;
+                    //当出现异常时，由于是后台线程，如果立即抛出异常，
+                    // * 可能没有人捕获，造成程序崩溃；
+                    // * 造成DcPart.OpenData永远等待或超时。
+                    // 所以这里将数据填充一个空的。
+                    byte[] emptyData = new byte[0];
+                    foreach (var item in _allPairs) {
+                        DcPart part = (DcPart)item.Value;
+                        if (part._data == null) {
+                            part._data = emptyData;
+                        }
                     }
-                }
 
-                //异常将被OpenDataCore抛出。
+                    //异常将被OpenDataCore抛出。
+                }
+                else {
+                    throw;
+                }
             }
             finally {
                 this.BaseStream.Close();
                 this.Close();
             }
 
+            if (isAsynchronous) {
+                OpenAllData(isAsynchronous);
+            }
+        }
+
+        private void OpenAllData(bool isAsynchronous) {
             //后台线程仍然继续，将数据解包。
             try {
                 var runtime = _sourcePackage.Runtime;
@@ -96,14 +118,21 @@ namespace System.Configuration.Core.Dc {
                 }
             }
             catch (Exception ex) {
-                Trace.Write(ex.Message);
-                //任何数据的解包失败，都将造成此线程的停止，但不会出现异常。
-                //由于IsOpened未设置为true，所以在首次使用时仍然会出现异常。
+                if (isAsynchronous) {
+                    Trace.Write(ex.Message);
+                    //任何数据的解包失败，都将造成此线程的停止，但不会出现异常。
+                    //由于IsOpened未设置为true，所以在首次使用时仍然会出现异常。
+                }
+                else {
+                    throw;
+                }
             }
         }
 
         private void ReadObjectTypes() {
             var count = this.Read7BitEncodedInt();
+            var types = _readContext.Types;
+            types.Capacity = types.Count + count;
 
             for (int i = 0; i < count; i++) {
                 var typeData = new ObjectTypeReadData() {
@@ -111,15 +140,18 @@ namespace System.Configuration.Core.Dc {
                 };
 
                 var propertyCount = this.Read7BitEncodedInt();
+                var properties = typeData.Properties;
+                properties.Capacity = properties.Count + propertyCount;
+
                 for (int j = 0; j < propertyCount; j++) {
-                    typeData.Properties.Add(
+                    properties.Add(
                         new ObjectPropertyReadData() {
                             //这里Name是属性的名称，注意有个特殊的属性，即Base
                             Name = _readContext.Strings[this.Read7BitEncodedInt()]
                         });
                 }
 
-                _readContext.Types.Add(typeData);
+                types.Add(typeData);
             }
         }
 
@@ -184,6 +216,7 @@ namespace System.Configuration.Core.Dc {
         private void ReadStrings() {
             var count = this.Read7BitEncodedInt();
             var strs = _readContext.Strings;
+            strs.Capacity = strs.Count + count;
 
             for (int i = 0; i < count; i++) {
                 strs.Add(string.Intern(this.ReadString()));
@@ -194,7 +227,6 @@ namespace System.Configuration.Core.Dc {
             var count = this.Read7BitEncodedInt();
             string objNamespace;
             string name;
-            string packageName = _sourcePackage.Name;
             var strings = _readContext.Strings;
             KeyValuePair<FullName, ConfigurationObjectPart>[] pairs = new KeyValuePair<FullName, ConfigurationObjectPart>[count];
 
