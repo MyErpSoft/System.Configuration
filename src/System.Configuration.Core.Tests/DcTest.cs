@@ -23,12 +23,12 @@ namespace System.Configuration.Core.Tests {
             Repository rep = new Repository(RootDirectory.Path);
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
 
-            string file = Path.Combine(RootDirectory.Path, "testPackage.dc");
+            string file = Path.Combine(RootDirectory.Path, "testPackage3.dc");
             var source = rep.GetPackage("testPackage");
 
             //创建二进制dc
             BinaryPackageWriter.ConvertToDc(file, source);
-            AssertValues("testPackage");
+            AssertValues("testPackage3");
         }
 
         [TestMethod]
@@ -72,7 +72,7 @@ namespace System.Configuration.Core.Tests {
             Repository rep = new Repository(RootDirectory.Path);
             ConfigurationWorkspace wp = new ConfigurationWorkspace(rep);
 
-            string file = Path.Combine(RootDirectory.Path, "BigPackage.dc");
+            string file = Path.Combine(RootDirectory.Path, "BinBigPackage.dc");
             var source = rep.GetPackage("BigPackage");
 
             //创建二进制dc
@@ -85,7 +85,7 @@ namespace System.Configuration.Core.Tests {
 
             for (int i = 0; i < 10000; i++) {
 
-                Button btnOK = (Button)wp.GetObject(new QualifiedName("company.erp.demo", "btnOK" + i.ToString(), "BigPackage"));
+                Button btnOK = (Button)wp2.GetObject(new QualifiedName("company.erp.demo", "btnOK" + i.ToString(), "BinBigPackage"));
                 Assert.AreEqual("OK", btnOK.Text);
 
                 //bool
@@ -96,7 +96,7 @@ namespace System.Configuration.Core.Tests {
 
                 //Reference
                 var refValue = btnOK.BackgroundImage;
-                Image imgSky = (Image)wp.GetObject(new QualifiedName("company.erp.demo", "imgSky", "BigPackage"));
+                Image imgSky = (Image)wp2.GetObject(new QualifiedName("company.erp.demo", "imgSky", "BinBigPackage"));
                 Assert.AreEqual(imgSky, refValue);
             }
             w.Stop();
