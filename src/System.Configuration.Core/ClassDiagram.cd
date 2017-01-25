@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Comment CommentText="第一层：知识库&#xD;&#xA;如果你开发一个ERP，那么这个ERP就是一个Repository。&#xD;&#xA;如果有个二次开发就又是一个Repository，并且依赖前面的Repository。">
-    <Position X="2.5" Y="2.5" Height="0.917" Width="3.502" />
+    <Position X="3.26" Y="2.542" Height="0.917" Width="3.502" />
   </Comment>
   <Comment CommentText="使用xml形式存储的库，相当于Visual Studio 的解决方案源代码。&#xD;&#xA;VS编译后会生成dll，我们也一样对应的是二进制Repository">
-    <Position X="0.5" Y="3.406" Height="1.427" Width="1.825" />
+    <Position X="0.5" Y="3.75" Height="1.427" Width="2.023" />
   </Comment>
   <Comment CommentText="Repository包含很多Package。">
-    <Position X="3.646" Y="7.01" Height="0.354" Width="1.95" />
+    <Position X="3.281" Y="7.437" Height="0.354" Width="1.95" />
   </Comment>
   <Comment CommentText="第二层：库&#xD;&#xA;库相当于dll，是存放数据的检索形式，运行时检索某个配置对象时不至于先加载所有文件。">
     <Position X="5.927" Y="4.479" Height="0.917" Width="3.502" />
@@ -30,6 +30,13 @@
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Properties" Collapsed="true" />
     </Compartments>
+    <NestedTypes>
+      <Class Name="System.Configuration.Core.Repository.PackageCacheItem" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Repository.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
     <AssociationLine Name="Dependencies" Type="System.Configuration.Core.Repository" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="5.25" Y="4.657" />
@@ -43,19 +50,12 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>QAAIAAAAAEAAAACAAAAEAAAAAABAAAgwAAQAAAQACAA=</HashCode>
+      <HashCode>QAAIAAAAAMACAASECAAECAAAAABQAgiwAAQAAAAACgA=</HashCode>
       <FileName>Repository.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
       <Property Name="Dependencies" />
     </ShowAsCollectionAssociation>
-  </Class>
-  <Class Name="System.Configuration.Core.Dcxml.DcxmlRepository" Collapsed="true">
-    <Position X="0.5" Y="5" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>KAAgAAAQAABCAAiEAQEAAAAAAACAAAAAAAAAAAwAAiA=</HashCode>
-      <FileName>Dcxml\DcxmlRepository.cs</FileName>
-    </TypeIdentifier>
   </Class>
   <Class Name="System.Configuration.Core.Package">
     <Position X="6" Y="5.5" Width="1.5" />
@@ -63,38 +63,16 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAIAIAAABAAAAEAAAAAAQAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <HashCode>AQAAIAAAAAAAAAAECAAAAAQAAAAAAgAAAAACAAAAAAA=</HashCode>
       <FileName>Package.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="System.Configuration.Core.ConfigurationObjectPart" Collapsed="true">
     <Position X="8.25" Y="7" Width="2" />
-    <NestedTypes>
-      <Class Name="System.Configuration.Core.ConfigurationObjectPart.BaseProperty" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>ConfigurationObjectPart.cs</NewMemberFileName>
-        </TypeIdentifier>
-        <Lollipop Position="0.2" />
-      </Class>
-    </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAACABEAAAAQAAAAADQQA=</HashCode>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAACAAAgAAAQAAAAAAQQA=</HashCode>
       <FileName>ConfigurationObjectPart.cs</FileName>
     </TypeIdentifier>
-  </Class>
-  <Class Name="System.Configuration.Core.QualifiedName">
-    <Position X="8.75" Y="1.75" Width="1.5" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAIIAEgAAAAAIAAAAQAIAAAAAAAAAAAiA=</HashCode>
-      <FileName>QualifiedName.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="FullName" />
-    </ShowAsAssociation>
   </Class>
   <Class Name="System.Configuration.Core.ConfigurationWorkspace">
     <Position X="2" Y="10" Width="2.75" />
@@ -109,7 +87,7 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAAAICAQBAIAAAAAgAAAAAAAAAAAgAAAAAgAAAAAA=</HashCode>
+      <HashCode>AAAAAAICAABAIAAAAAAAAAAAAAAAAAgAAAAAgAAAAAA=</HashCode>
       <FileName>ConfigurationWorkspace.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -120,23 +98,36 @@
       <FileName>ConfigurationObject.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="System.Configuration.Core.Dcxml.DcxmlPackageProvider" Collapsed="true">
+    <Position X="0.5" Y="5.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAQAAAAAQAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dcxml\DcxmlPackageProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
   <Struct Name="System.Configuration.Core.FullName">
     <Position X="11.5" Y="1.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <NestedTypes>
-      <Class Name="System.Configuration.Core.FullName.PartKeyEqualityComparer" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>FullName.cs</NewMemberFileName>
-        </TypeIdentifier>
-        <Lollipop Position="0.2" />
-      </Class>
-    </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAEgAAAAAQAAAAAIIAAAAAAAAAAAyA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAEgAAAAAQAAAAAIIAAAAAAAAAAAiA=</HashCode>
       <FileName>FullName.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="System.Configuration.Core.QualifiedName">
+    <Position X="8.75" Y="1.75" Width="1.5" />
+    <Members>
+      <Field Name="Empty" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAEgAIAAAAAAAAQAIAAAAAAAAAAAiA=</HashCode>
+      <FileName>QualifiedName.cs</FileName>
     </TypeIdentifier>
   </Struct>
   <Font Name="Microsoft YaHei UI" Size="9" />

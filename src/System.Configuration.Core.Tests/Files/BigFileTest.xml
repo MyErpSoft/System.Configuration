@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<directory name="root">
+
+  <!--原始文件-->
+  <directory name="rep1">
+    <file name="QueryProjectContainer.dcxml" />
+  </directory>
+
+</directory>
