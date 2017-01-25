@@ -105,15 +105,32 @@ namespace System.Configuration.Core.Metadata.Clr {
         private PropertyCollection CreateProperties() {
             //获取基类，这样可用重用基类的属性描述符。
             Dictionary<string, ClrProperty> properties;
-            if (this.ClrMapping.BaseType != typeof(object)) {
-                var baseType = GetClrType(this.ClrMapping.BaseType); 
-                properties = new Dictionary<string, ClrProperty>(baseType.Properties.Count,StringComparer.Ordinal);
-                foreach (var item in baseType.Properties) {
-                    properties.Add(item.Name,item);
-                }
-            }
-            else {
+            
+            //接口是没有基类
+            if (this.ClrMapping.IsInterface) {
+                var interfaces = this.ClrMapping.GetInterfaces();
                 properties = new Dictionary<string, ClrProperty>(StringComparer.Ordinal);
+
+                if (interfaces != null && interfaces.Length > 0) {
+                    foreach (var baseInterface in interfaces) {
+                        var baseType = GetClrType(baseInterface);
+                        foreach (var item in baseType.Properties) {
+                            properties.Add(item.Name, item);
+                        }
+                    }
+                }
+            }else {
+                var baseClrType = this.ClrMapping.BaseType;
+                if (baseClrType != typeof(object)) {
+                    var baseType = GetClrType(baseClrType);
+                    properties = new Dictionary<string, ClrProperty>(baseType.Properties.Count, StringComparer.Ordinal);
+                    foreach (var item in baseType.Properties) {
+                        properties.Add(item.Name, item);
+                    }
+                }
+                else {
+                    properties = new Dictionary<string, ClrProperty>(StringComparer.Ordinal);
+                }
             }
 
             //获取自身的属性描述符，注意： GetClrMembers仅仅返回当前类型声明的属性。

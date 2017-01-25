@@ -29,7 +29,16 @@ namespace System.Configuration.Core.Metadata {
             return result;
         }
 
+        /// <summary>
+        /// 使用clr类进行配置对象类型信息绑定的形式，例如在dcxml中指定xmlns="clr-namespace:System.Configuration.Core.Tests,System.Configuration.Core.Tests"
+        /// </summary>
         public const string ClrBinderProviderName = "clr-namespace";
+
+        /// <summary>
+        /// 使用clr接口进行配置对象类型信息绑定的形式，例如在dcxml中指定xmlns="iclr-namespace:System.Configuration.Core.Tests,System.Configuration.Core.Tests"
+        /// </summary>
+        public const string ClrInterfaceBinderProviderName = "iclr-namespace";
+
         /// <summary>
         /// 默认实现的clr-namespace的绑定器
         /// </summary>
@@ -48,8 +57,20 @@ namespace System.Configuration.Core.Metadata {
                 return true;
             }
 
+            if (name.ProviderName == ClrInterfaceBinderProviderName) {
+                Type dt = Type.GetType(ConvertInterfaceName(name.QualifiedName), true);
+                type = (IType)Clr.ClrType.GetClrType(dt);
+                return true;
+            }
+
             type = null;
             return false;
+        }
+
+        private static string ConvertInterfaceName(QualifiedName qName) {
+            var name = qName.FullName.Name;
+            //类似Window，添加前缀I，变成IWindow
+            return new QualifiedName(qName.FullName.Namespace, "I" + name, qName.PackageName).ToString();
         }
         #endregion
 
@@ -62,8 +83,13 @@ namespace System.Configuration.Core.Metadata {
         public virtual object CreateObject(ConfigurationObject data) {
             ClrType clrType = data.Part.Type as ClrType;
             if (clrType != null) {
-                //组装成新的配置对象。
-                return Activator.CreateInstance(clrType.MappingType, data);
+                if (clrType.MappingType.IsInterface) {
+                    return new ConfigInterfaceRealProxy(clrType.MappingType, data).GetTransparentProxy();
+                }
+                else {
+                    //组装成新的配置对象。
+                    return Activator.CreateInstance(clrType.MappingType, data);
+                }
             }
 
             Utilities.ThrowNotSupported("重载此方法用于支持新类型的创建。");

@@ -161,4 +161,23 @@ namespace System.Configuration.Core.Tests {
         None = 0,
     }
 
+    //为接口支持提供的类，
+    public interface IWindow : IControl {
+    }
+
+    public interface IControl {
+        string Text { get; set; }
+        bool Enabled { get; set; }
+        AnchorStyles Anchor { get; set; }
+        IImage BackgroundImage { get; set; }
+        ICollection<IControl> Controls { get; }
+    }
+
+    public interface IImage {
+        string Path { get; set; }
+    }
+
+    public interface IButton : IControl {
+        bool UseMnemonic { get; set; }
+    }
 }

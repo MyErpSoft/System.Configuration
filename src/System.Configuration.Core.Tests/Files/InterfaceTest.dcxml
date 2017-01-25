@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- 注意，xmlns使用了iclr-namespace，而不是普通的clr-namespace，因为当使用接口时，通常类的名字前面使用I前缀，这样在dcxml中就类似IButton，这样比较丑，所以使用了特殊的命名空间。 
+     我们还测试了混合使用的情况，即有一部分是使用接口类型的，有一部分是类方式的。
+-->
+<x:ObjectContainer
+               xmlns="iclr-namespace:System.Configuration.Core.Tests,System.Configuration.Core.Tests"
+               xmlns:c="clr-namespace:System.Configuration.Core.Tests,System.Configuration.Core.Tests"
+               xmlns:x="http://schemas.myerpsoft.com/configuration/2015"
+               x:namespace="company.erp.demo">
+
+  <!--有一个窗口，集合包含2项。-->
+  <Window x:name="A1" >
+    <Text>A1</Text>
+    <Controls>
+      <Button x:ref="A1_1" />
+      <Button x:ref="A1_2" />
+    </Controls>
+  </Window>
+
+  <Button x:name="A1_1" >
+    <Text>A1_1</Text>
+  </Button>
+
+  <Button x:name="A1_2" >
+    <Text>A1_2</Text>
+  </Button>
+
+  <!-- 派生自A1，增加和删除项目 -->
+  <Window x:name="B1" x:base="A1">
+    <Text>B1</Text>
+    <Controls>
+      <Button x:ref="A1_2" x:action="remove" />
+      <Button x:ref="B1_1" />
+    </Controls>
+  </Window>
+
+  <Button x:name="B1_1" >
+    <Text>B1_1</Text>
+  </Button>
+  
+  <!-- 测试接口和类的混合使用的情况。 -->
+  <c:Button x:name="D1">
+    <Text>B1</Text>
+    <Controls>
+      <c:Button x:ref="C1_1"/>
+      <c:Button x:ref="C1_2" />
+    </Controls>
+  </c:Button>
+
+  <c:Button x:name="C1_1" >
+    <Text>C1_1</Text>
+  </c:Button>
+
+  <c:Button x:name="C1_2" >
+    <Text>C1_2</Text>
+  </c:Button>
+
+  <!-- 测试接口使用普通的CLR命名空间的情况。 -->
+  <c:IWindow x:name="D2">
+    <Text>D2</Text>
+    <Controls>
+      <c:IButton x:ref="E1_1"/>
+      <!--混合使用 -->
+      <Button x:ref="B1_1" />
+    </Controls>
+  </c:IWindow>
+
+  <c:IButton x:name="E1_1" >
+    <Text>C1_1</Text>
+  </c:IButton>
+  
+</x:ObjectContainer>

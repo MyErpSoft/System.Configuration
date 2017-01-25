@@ -36,6 +36,7 @@
     <Compile Include="Collections\ReadOnlyEnumerable.cs" />
     <Compile Include="CombinedPackage.cs" />
     <Compile Include="CombinedPart.cs" />
+    <Compile Include="Metadata\ConfigInterfaceRealProxy.cs" />
     <Compile Include="ConfigurationEntityStorage.cs" />
     <Compile Include="ConfigurationObject.cs" />
     <Compile Include="ConfigurationRuntime.cs" />

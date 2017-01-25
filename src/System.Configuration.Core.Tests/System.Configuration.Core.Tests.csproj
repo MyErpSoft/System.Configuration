@@ -60,6 +60,7 @@
     <Compile Include="BigFileTests\DependencyObject.cs" />
     <Compile Include="DiffTest.cs" />
     <Compile Include="InheritTest.cs" />
+    <Compile Include="InterfaceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BigFileTests\QueryProjectElement.cs" />
     <Compile Include="ReadOnlyKeyedCollectionTest.cs" />
@@ -92,6 +93,10 @@
     </None>
     <None Include="Files\CollectionTest_2.dcxml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Files\InterfaceTest.dcxml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="Files\QueryProjectContainer.dcxml">
       <SubType>Designer</SubType>
@@ -132,6 +137,11 @@
     <None Include="Files\BigFileTest.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Files\InterfaceTest.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

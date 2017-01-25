@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<directory name="root">
+
+  <directory name="interfaceTestPackage">
+    <file name="InterfaceTest.dcxml" />
+  </directory>
+
+</directory>
