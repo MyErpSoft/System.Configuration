@@ -13,10 +13,10 @@ namespace System.Configuration.Core {
     public class Repository {
 
         #region 构造函数
-        public Repository(string path) : this(path, DefaultRuntime, null) {
+        public Repository(string path) : this(path, ConfigurationRuntime.Default, null) {
         }
 
-        public Repository(string path, params Repository[] dependencies) : this(path, DefaultRuntime, dependencies) {
+        public Repository(string path, params Repository[] dependencies) : this(path, ConfigurationRuntime.Default, dependencies) {
         }
 
         public Repository(string path, ConfigurationRuntime runtime, params Repository[] dependencies) {
@@ -121,15 +121,6 @@ namespace System.Configuration.Core {
             get { return this._path; }
         }
 
-        private static ConfigurationRuntime _defaultRuntime = new ConfigurationRuntime();
-        /// <summary>
-        /// 返回缺省的运行时对象。
-        /// </summary>
-        public static ConfigurationRuntime DefaultRuntime {
-            get { return _defaultRuntime; }
-            set { _defaultRuntime = value; }
-        }
-
         //缓存了packageName对应的Package的映射，
         private readonly ObjectContainer<string, Package> _loadedPackages;
 
@@ -223,7 +214,7 @@ namespace System.Configuration.Core {
         private Dictionary<string, PackageCacheItem> GetLocalPackages() {
             //注意，PackageName是忽略大小写的。
             var dict = new Dictionary<string, PackageCacheItem>(StringComparer.OrdinalIgnoreCase);
-            var providers = _runtime.GetProviders();
+            var providers = _runtime._providerArray;
             foreach (var provider in providers) {
                 var items = provider.GetPackageNames(_path);
                 if (items != null) {

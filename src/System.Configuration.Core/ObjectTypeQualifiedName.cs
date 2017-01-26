@@ -20,30 +20,30 @@
     */
 
     /// <summary>
-    /// 定义了类型信息的检索名称
+    /// 定义了类型信息的检索名称，派生类允许自定义不同的配置类型。
     /// </summary>
-    public sealed class ObjectTypeQualifiedName {
+    public abstract class ObjectTypeQualifiedName : IEquatable<ObjectTypeQualifiedName> {
 
-        public ObjectTypeQualifiedName(string providerName, string objNamespace, string name, string packageName)
-            : this(providerName, new QualifiedName(new FullName(objNamespace, name), packageName)) {
-        }
-
-        public ObjectTypeQualifiedName(string providerName, FullName fullName, string packageName)
-            : this(providerName, new QualifiedName(fullName, packageName)) {
-        }
-
-        public ObjectTypeQualifiedName(string providerName, QualifiedName qualifiedName) {
-            this._providerName = providerName;
+        /// <summary>
+        /// 派生类调用此构造传入类型的识别名称。
+        /// </summary>
+        /// <param name="qualifiedName">类型的限定名称。</param>
+        protected ObjectTypeQualifiedName(QualifiedName qualifiedName) {
             this._qualifiedName = qualifiedName;
         }
 
-        private readonly string _providerName;
+        #region 属性
         /// <summary>
-        /// 指示提供类型信息的提供方，比如 clr-namespace。注意：此信息不参与相等判断。
+        /// 指示提供类型信息的提供方，比如 clr-namespace。
         /// </summary>
-        public string ProviderName {
-            get { return _providerName; }
-        }
+        public abstract string ProviderName { get; }
+
+        /// <summary>
+        /// 从当前实例中复制出一个新的对象，并赋值name
+        /// </summary>
+        /// <param name="name">新的名称。</param>
+        /// <returns>新的实例</returns>
+        protected abstract ObjectTypeQualifiedName Clone(string name);
 
         private readonly QualifiedName _qualifiedName;
         /// <summary>
@@ -52,7 +52,7 @@
         public string PackageName {
             get { return _qualifiedName.PackageName; }
         }
-        
+
         /// <summary>
         /// 返回命名空间和名称
         /// </summary>
@@ -71,16 +71,24 @@
         /// 返回名称。
         /// </summary>
         public string Name {
-            get { return this._qualifiedName.FullName.Namespace; }
+            get { return this._qualifiedName.FullName.Name; }
         }
 
         /// <summary>
-        /// 返回对象识别的完整对象。
+        /// 返回配置对象类型的完整识别名称，例如：company.erp.demo.ui.Window,company.erp.demo.ui
         /// </summary>
         public QualifiedName QualifiedName {
             get { return this._qualifiedName; }
         }
+        #endregion
 
+        #region 创建
+
+        /// <summary>
+        /// 在解析dcxml文件时，xmlns描述了诸如：xmlns="clr-namespace:company.erp.demo.ui,company.erp.demo.ui"这样的字符串，他未包含具体的名称，需要通过CreateByName创建具体的名称。
+        /// </summary>
+        /// <param name="str">一个包含ProvoderName，Namespace和PackageName，但没有描述具体的名称。</param>
+        /// <returns>一个不包含名称的描述对象</returns>
         public static ObjectTypeQualifiedName CreateWithoutName(string str) {
             if (string.IsNullOrEmpty(str)) {
                 Utilities.ThrowArgumentNull(nameof(str));
@@ -91,7 +99,7 @@
             string providerName;
             if (providerNameEndIndex < 0) {
                 //可以没有标注，表示没有提供者。
-                providerName = null;
+                providerName = string.Empty;
                 providerNameEndIndex = -1;
             }
             else {
@@ -114,7 +122,27 @@
                 packageName = string.Intern(str.Substring(objNamespaceEndIndex + 1).Trim());
             }
 
-            return new ObjectTypeQualifiedName(providerName, new FullName(objNamespace, null), packageName);
+            return Create(providerName, objNamespace, null, packageName);
+        }
+
+        /// <summary>
+        /// 创建新的实例。
+        /// </summary>
+        /// <param name="providerName">提供者</param>
+        /// <param name="objNamespace">命名空间</param>
+        /// <param name="name">名称</param>
+        /// <param name="packageName">包的名称</param>
+        /// <returns>新的实例</returns>
+        public static ObjectTypeQualifiedName Create(string providerName, string objNamespace, string name, string packageName) {
+            if (string.Equals(providerName, ClrProviderName, StringComparison.OrdinalIgnoreCase)) {
+                return new ClrTypeQualifiedName(new QualifiedName(objNamespace, name, packageName));
+            }
+            else if (string.Equals(providerName, ClrInterfaceProviderName, StringComparison.OrdinalIgnoreCase)) {
+                return new ClrInterfaceTypeQualifiedName(new QualifiedName(objNamespace, name, packageName));
+            }
+            else {
+                return new BasicTypeQualifiedName(providerName, new QualifiedName(objNamespace, name, packageName));
+            }
         }
 
         /// <summary>
@@ -130,17 +158,93 @@
                 Utilities.ThrowArgumentException("不正确的类型名称。", nameof(name));
             }
 
-            return new ObjectTypeQualifiedName(this._providerName, new FullName(this.FullName.Namespace, name), this.PackageName);
+            return Clone(name);
         }
 
-        //注意：此信息不参与相等判断，无论来源哪里，都使用标准的相等判断。
+        /// <summary>
+        /// 使用clr类进行配置对象类型信息绑定的形式，例如在dcxml中指定xmlns="clr-namespace:System.Configuration.Core.Tests,System.Configuration.Core.Tests"
+        /// </summary>
+        public const string ClrProviderName = "clr-namespace";
+
+        /// <summary>
+        /// 使用clr接口进行配置对象类型信息绑定的形式，例如在dcxml中指定xmlns="iclr-namespace:System.Configuration.Core.Tests,System.Configuration.Core.Tests"
+        /// </summary>
+        public const string ClrInterfaceProviderName = "iclr-namespace";
+
+        /// <summary>
+        /// 内置clr-namespace的处理逻辑，减少对象ProviderName这个字段的占用。
+        /// </summary>
+        private sealed class ClrTypeQualifiedName : ObjectTypeQualifiedName {
+            public ClrTypeQualifiedName(QualifiedName qualifiedName) : base(qualifiedName) { }
+
+            public override string ProviderName {
+                get { return ClrProviderName; }
+            }
+
+            protected override ObjectTypeQualifiedName Clone(string name) {
+                return new ClrTypeQualifiedName(new QualifiedName(this.FullName.Namespace, name, this.PackageName));
+            }
+        }
+
+        /// <summary>
+        /// 内置iclr-namespace的处理逻辑，减少对象ProviderName这个字段的占用。
+        /// </summary>
+        private sealed class ClrInterfaceTypeQualifiedName : ObjectTypeQualifiedName {
+            public ClrInterfaceTypeQualifiedName(QualifiedName qualifiedName) : base(qualifiedName) { }
+
+            public override string ProviderName {
+                get { return ClrInterfaceProviderName; }
+            }
+            protected override ObjectTypeQualifiedName Clone(string name) {
+                return new ClrInterfaceTypeQualifiedName(new QualifiedName(this.FullName.Namespace, name, this.PackageName));
+            }
+        }
+
+        /// <summary>
+        /// 普通的第三方提供者，必须占用一个字段存储ProviderName
+        /// </summary>
+        private sealed class BasicTypeQualifiedName : ObjectTypeQualifiedName {
+
+            public BasicTypeQualifiedName(string providerName, QualifiedName qualifiedName) : base(qualifiedName) {
+                _providerName = providerName;
+            }
+
+            private readonly string _providerName;
+            /// <summary>
+            /// 指示提供类型信息的提供方，比如 clr-namespace。注意：此信息不参与相等判断。
+            /// </summary>
+            public override string ProviderName {
+                get { return _providerName; }
+            }
+            protected override ObjectTypeQualifiedName Clone(string name) {
+                return new BasicTypeQualifiedName(this.PackageName, new QualifiedName(this.FullName.Namespace, name, this.PackageName));
+            }
+        }
+        #endregion
+
         /// <summary>
         /// 返回此类型的字符串描述，注意注意
         /// </summary>
         /// <returns></returns>
         public override string ToString() {
             var qn = this._qualifiedName.ToString();
-            return string.IsNullOrEmpty(qn) ? qn : this._providerName + ":" + qn; 
+            return string.IsNullOrEmpty(ProviderName) ? qn : this.ProviderName + ":" + qn;
+        }
+
+        public static bool operator ==(ObjectTypeQualifiedName x, ObjectTypeQualifiedName y) {
+            if (object.ReferenceEquals(x, y)) {
+                return true;
+            }
+
+            if (object.ReferenceEquals(x, null) || object.ReferenceEquals(y, null) || x.ProviderName != y.ProviderName) {
+                return false;
+            }
+
+            return x._qualifiedName == y._qualifiedName;
+        }
+
+        public static bool operator !=(ObjectTypeQualifiedName x, ObjectTypeQualifiedName y) {
+            return !(x == y);
         }
 
         public override bool Equals(object obj) {
@@ -149,47 +253,24 @@
             }
 
             ObjectTypeQualifiedName qn = obj as ObjectTypeQualifiedName;
-            if (qn != null) {
-                return qn._qualifiedName == this._qualifiedName;
-            }
-
-            if (obj is QualifiedName) {
-                QualifiedName other = (QualifiedName)obj;
-                return other == this._qualifiedName;
-            }
-
-            if (obj == null && this._qualifiedName == QualifiedName.Empty) {
-                return true;
-            }
-
-            return false;
+            return this.Equals(qn);
         }
 
         public override int GetHashCode() {
-            return this._qualifiedName.GetHashCode();
+            var hc = this.ProviderName == null ? -7 : this.ProviderName.GetHashCode();
+            return hc ^ this._qualifiedName.GetHashCode();
         }
 
-        public static bool operator ==(ObjectTypeQualifiedName x, QualifiedName y) {
-            QualifiedName x1 = ((object)x == null ? QualifiedName.Empty : x._qualifiedName);
-            return x1 == y;
-        }
-
-        public static bool operator !=(ObjectTypeQualifiedName x, QualifiedName y) {
-            return !(x == y);
-        }
-
-        public static bool operator ==(ObjectTypeQualifiedName x, ObjectTypeQualifiedName y) {
-            if (object.ReferenceEquals(x, y)) {
+        public bool Equals(ObjectTypeQualifiedName other) {
+            if (object.ReferenceEquals(this, other)) {
                 return true;
             }
 
-            QualifiedName x1 = ((object)x == null ? QualifiedName.Empty : x._qualifiedName);
-            QualifiedName y1 = ((object)y == null ? QualifiedName.Empty : y._qualifiedName);
-            return x1 == y1;
-        }
-        
-        public static bool operator !=(ObjectTypeQualifiedName x, ObjectTypeQualifiedName y) {
-            return !(x == y);
+            if (object.ReferenceEquals(other,null)) {
+                return false;
+            }
+            
+            return this.ProviderName == other.ProviderName && this._qualifiedName == other._qualifiedName;
         }
     }
 }

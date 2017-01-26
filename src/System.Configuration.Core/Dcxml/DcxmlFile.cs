@@ -138,7 +138,7 @@ namespace System.Configuration.Core.Dcxml {
                 typeNameWithoutName = ObjectTypeQualifiedName.CreateWithoutName(xmlNamespace.NamespaceName);
                 _typePackages.Add(xmlNamespace, typeNameWithoutName);
             }
-
+            
             return typeNameWithoutName.CreateByName(name.LocalName);
         }
 

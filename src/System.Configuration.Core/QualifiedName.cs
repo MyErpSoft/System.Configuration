@@ -3,7 +3,7 @@
     /// <summary>
     /// 表示一个配置对象的识别键，包含所在的组装件、命名空间和名称。
     /// </summary>
-    public struct QualifiedName {
+    public struct QualifiedName : IEquatable<QualifiedName> {
         /// <summary>结构不允许为null，所以这里内部使用了Empty.</summary>
         internal readonly static QualifiedName Empty = new QualifiedName(null, null, null);
          
@@ -60,6 +60,15 @@
         /// <returns>一个int32固定值。</returns>
         public override int GetHashCode() {
             return this.FullName.GetHashCode() ^ (this.PackageName == null ? 0 : this.PackageName.ToUpperInvariant().GetHashCode());
+        }
+
+        /// <summary>
+        /// 判断两个对象是否相等，如果FullName和PackageName都相等。注意：PackageName不区分大小写。，则返回true。。
+        /// </summary>
+        /// <param name="other">要比较的对象。</param>
+        /// <returns>返回是否相等。</returns>
+        public bool Equals(QualifiedName other) {
+            return this.FullName == other.FullName && string.Equals(this.PackageName, other.PackageName, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

@@ -40,7 +40,7 @@
   
   <!-- 测试接口和类的混合使用的情况。 -->
   <c:Button x:name="D1">
-    <Text>B1</Text>
+    <Text>D1</Text>
     <Controls>
       <c:Button x:ref="C1_1"/>
       <c:Button x:ref="C1_2" />

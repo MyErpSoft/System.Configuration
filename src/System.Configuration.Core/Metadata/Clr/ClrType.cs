@@ -52,8 +52,8 @@ namespace System.Configuration.Core.Metadata.Clr {
         public ObjectTypeQualifiedName QualifiedName {
             get {
                 if (_qualifiedName == null) {
-                    _qualifiedName = new ObjectTypeQualifiedName(
-                        ConfigurationObjectBinder.ClrBinderProviderName,
+                    _qualifiedName = ObjectTypeQualifiedName.Create(
+                        ObjectTypeQualifiedName.ClrProviderName,
                         this.ClrMapping.Namespace,
                         this.ClrMapping.Name,
                         this.ClrMapping.Assembly.FullName //注意这里可能包含版本，时区等信息，例如：ExampleAssembly, Version=1.0.0.0, Culture=en, PublicKeyToken=a5d015c7d5a0b012

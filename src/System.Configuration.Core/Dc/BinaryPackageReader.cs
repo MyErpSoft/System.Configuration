@@ -159,7 +159,7 @@ namespace System.Configuration.Core.Dc {
             string objNamespace, name, packageName, providerName;
             if (ReadQualifiedName(out objNamespace, out name, out packageName)) {
                 providerName = this._readContext.Strings[this.Read7BitEncodedInt()];
-                return new ObjectTypeQualifiedName(providerName, objNamespace, name, packageName);
+                return ObjectTypeQualifiedName.Create(providerName, objNamespace, name, packageName);
             }
             else {
                 return null;

@@ -43,7 +43,7 @@ namespace System.Configuration.Core.Dc {
                     //类型
                     var typeData = reader.ReadTypeData();
                     if (typeData.Type == null) {
-                        typeData.Type = runtime.Binder.BindToType(typeData.Name);
+                        typeData.Type = runtime.Binders.BindToType(typeData.Name);
                     }
                     _type = typeData.Type;
 

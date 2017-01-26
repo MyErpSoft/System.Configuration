@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System.Configuration.Core.Metadata;
+using System.Configuration.Core.Metadata.Clr;
+using System.Globalization;
 
 namespace System.Configuration.Core {
 
@@ -76,6 +78,29 @@ namespace System.Configuration.Core {
             return new ObjectPart(new ConfigurationObject(this, key, part));
         }
 
+        #region 创建配置对象
+        /// <summary>
+        /// 允许派生类重载此方法，创建自己的配置对象。
+        /// </summary>
+        /// <param name="data">关联的配置对象。</param>
+        /// <returns>一个新的配置对象。</returns>
+        internal protected virtual object CreateObject(ConfigurationObject data) {
+            ClrType clrType = data.Part.Type as ClrType;
+            if (clrType != null) {
+                if (clrType.MappingType.IsInterface) {
+                    return new ConfigInterfaceRealProxy(clrType.MappingType, data).GetTransparentProxy();
+                }
+                else {
+                    //组装成新的配置对象。
+                    return Activator.CreateInstance(clrType.MappingType, data);
+                }
+            }
+
+            Utilities.ThrowNotSupported("重载此方法用于支持新类型的创建。");
+            return true;
+        }
+        #endregion
+
         private sealed class ObjectPart {
             public ObjectPart(ConfigurationObject cobj) {
                 this.ConfigObject = cobj;
@@ -91,7 +116,7 @@ namespace System.Configuration.Core {
 
                 lock (this) {
                     if (ClrObject == null) {
-                        this.ClrObject = workspace.Repository.Runtime.Binder.CreateObject(this.ConfigObject);
+                        this.ClrObject = workspace.CreateObject(this.ConfigObject);
                     }
 
                     return this.ClrObject;

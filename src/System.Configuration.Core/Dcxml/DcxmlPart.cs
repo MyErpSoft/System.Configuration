@@ -27,7 +27,7 @@ namespace System.Configuration.Core.Dcxml {
         }
 
         protected override void OpenDataCore(ConfigurationRuntime runtime) {
-            var dt = runtime.Binder.BindToType(_typeName);
+            var dt = runtime.Binders.BindToType(_typeName);
             _type = dt;
 
             foreach (var item in _data.Elements()) {
