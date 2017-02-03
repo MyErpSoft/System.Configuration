@@ -51,11 +51,11 @@ namespace System.Configuration.Core {
        #region Open
         private volatile bool _isOpened; 
 
-        internal void OpenData(ConfigurationRuntime runtime) {
+        internal void OpenData(IConfigurationObjectBinder binder) {
             if (!_isOpened) {
                 lock (this) {
                     if (!_isOpened) {
-                        this.OpenDataCore(runtime);
+                        this.OpenDataCore(binder);
                         _isOpened = true;
                     }
                 }
@@ -74,7 +74,7 @@ namespace System.Configuration.Core {
         /// <summary>
         /// 派生类重载此方法，将原始的数据解开填充到当前数据包中。
         /// </summary>
-        protected abstract void OpenDataCore(ConfigurationRuntime runtime);
+        protected abstract void OpenDataCore(IConfigurationObjectBinder binder);
         #endregion
     }
 }

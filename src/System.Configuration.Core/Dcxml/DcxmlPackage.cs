@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Configuration.Core.Metadata;
 using System.Xml.Linq;
 
 namespace System.Configuration.Core.Dcxml {
@@ -6,8 +7,8 @@ namespace System.Configuration.Core.Dcxml {
     internal class DcxmlPackage : BasicPackage {
 
         private string[] _files;
-        public DcxmlPackage(string packageName, ConfigurationRuntime runtime, string[] files)
-            : base(packageName,runtime) {
+        public DcxmlPackage(string packageName, Repository repository, string[] files)
+            : base(packageName, repository) {
             this._files = files;
         }
 

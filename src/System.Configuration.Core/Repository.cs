@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration.Core.Metadata;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -13,22 +14,23 @@ namespace System.Configuration.Core {
     public class Repository {
 
         #region 构造函数
-        public Repository(string path) : this(path, ConfigurationRuntime.Default, null) {
+        public Repository(string path) : this(Utilities.CreateDefaultPackageProvider(path), Utilities.DefaultBinder, null) {
         }
 
-        public Repository(string path, params Repository[] dependencies) : this(path, ConfigurationRuntime.Default, dependencies) {
+        public Repository(string path, params Repository[] dependencies) : this(Utilities.CreateDefaultPackageProvider(path), Utilities.DefaultBinder, dependencies) {
         }
 
-        public Repository(string path, ConfigurationRuntime runtime, params Repository[] dependencies) {
-            if (string.IsNullOrEmpty(path)) {
-                Utilities.ThrowArgumentNull(nameof(path));
+        public Repository(IPackageProvider provider, IConfigurationObjectBinder binder, params Repository[] dependencies) {
+            if (provider == null) {
+                Utilities.ThrowArgumentNull(nameof(provider));
             }
-            this._path = path;
+            _packageProvider = provider;
+            _packageProvider.Changed += packageProvider_Changed;
 
-            if (runtime == null) {
-                Utilities.ThrowArgumentNull(nameof(runtime));
+            if (binder == null) {
+                Utilities.ThrowArgumentNull(nameof(binder));
             }
-            this._runtime = runtime;
+            this._binder = binder;
 
             if (dependencies == null || dependencies.Length == 0) {
                 this._dependencies = _emptyRepositories;
@@ -43,7 +45,7 @@ namespace System.Configuration.Core {
         }
         #endregion
 
-        #region 仓库管理
+        #region 仓库依赖管理
         private int? _depth;
         //依赖深度。用于排序
         private int Depth {
@@ -90,7 +92,7 @@ namespace System.Configuration.Core {
 
         private void AddTo(Repository repository, HashSet<Repository> list) {
             if (list.Add(repository)) {
-                if (repository._runtime != this._runtime) {
+                if (repository._binder != this._binder) {
                     Utilities.ThrowApplicationException(string.Format(CultureInfo.CurrentCulture,
                         "依赖的知识库 {0} 必须公用同一个运行时。", repository));
                 }
@@ -105,21 +107,23 @@ namespace System.Configuration.Core {
 
         #endregion
 
-        private readonly ConfigurationRuntime _runtime;
+        #region 属性
+        private readonly IPackageProvider _packageProvider;
         /// <summary>
-        /// 返回包关联的运行时信息
+        /// 返回当前仓库关联的Package提供者。
         /// </summary>
-        public ConfigurationRuntime Runtime {
-            get { return this._runtime; }
+        public IPackageProvider PackageProvider {
+            get { return _packageProvider; }
         }
 
-        private string _path;
+        private readonly IConfigurationObjectBinder _binder;
         /// <summary>
-        /// 返回仓库所在的路径。
+        /// 返回当前仓库关联的类型绑定器。
         /// </summary>
-        public string RootPath {
-            get { return this._path; }
+        public IConfigurationObjectBinder Binder {
+            get { return _binder; }
         }
+        #endregion
 
         //缓存了packageName对应的Package的映射，
         private readonly ObjectContainer<string, Package> _loadedPackages;
@@ -173,7 +177,7 @@ namespace System.Configuration.Core {
                 //由于允许多个仓库包含同一个名称的包，他们之间是差量的关系，我们会包装成一个虚拟的包。
                 //大多数情况下是没有差量的包，所以每次总是foreach一个数组，而这个数组只有一个记录，对于计算次数极其多的方法是不合算的。
                 if (list != null) {
-                    return new CombinedPackage(list.ToArray(), Runtime);
+                    return new CombinedPackage(list.ToArray(), this);
                 }
                 else if (firstPackage != null) {
                     return firstPackage;
@@ -188,7 +192,8 @@ namespace System.Configuration.Core {
         /// <summary>本仓库所有的本地Package清单</summary>
         // 注意与_loadedPackages很不同：
         // _localPackages是本地文件所有Package（可能没有加载），而_loadedPackages是已经加载过的。
-        private Dictionary<string, PackageCacheItem> _localPackages;
+        private volatile Dictionary<string, PackageItem> _localPackages;
+
         /// <summary>
         /// 读取一个指定名称的本地包对象。
         /// </summary>
@@ -202,28 +207,25 @@ namespace System.Configuration.Core {
                 localPackages = _localPackages;
             }
 
-            PackageCacheItem cacheItem;
+            PackageItem cacheItem;
             if (localPackages.TryGetValue(packageName, out cacheItem)) {
-                return cacheItem.TryGetPackage(_path, _runtime, out package);
+                return cacheItem.TryGetPackage(this, out package);
             }
 
             package = null;
             return false;
         }
 
-        private Dictionary<string, PackageCacheItem> GetLocalPackages() {
+        private Dictionary<string, PackageItem> GetLocalPackages() {
             //注意，PackageName是忽略大小写的。
-            var dict = new Dictionary<string, PackageCacheItem>(StringComparer.OrdinalIgnoreCase);
-            var providers = _runtime._providerArray;
-            foreach (var provider in providers) {
-                var items = provider.GetPackageNames(_path);
-                if (items != null) {
-                    foreach (var item in items) {
-                        //当同一个仓库，存在两个相同名称的Package时，会优先保留Provider靠前的那个。
-                        //例如在某个仓库中，包含Dcxml形式的目录，也包含对应的dc文件，我们将仅保留dcxml形式，这也为调试提供了方便。
-                        if (!string.IsNullOrEmpty(item) && !dict.ContainsKey(item)) {
-                            dict.Add(item, new PackageCacheItem(item, provider));
-                        }
+            var dict = new Dictionary<string, PackageItem>(StringComparer.OrdinalIgnoreCase);
+            var items = _packageProvider.GetPackageItems();
+            if (items != null) {
+                foreach (var item in items) {
+                    //当同一个仓库，存在两个相同名称的Package时，会优先保留Provider靠前的那个。
+                    //例如在某个仓库中，包含Dcxml形式的目录，也包含对应的dc文件，我们将仅保留dcxml形式，这也为调试提供了方便。
+                    if (!string.IsNullOrEmpty(item.Name) && !dict.ContainsKey(item.Name)) {
+                        dict.Add(item.Name, item);
                     }
                 }
             }
@@ -231,33 +233,9 @@ namespace System.Configuration.Core {
             return dict;
         }
 
-        private sealed class PackageCacheItem {
-            public readonly string Name;
-            public readonly IPackageProvider Provider;
-            private Package _package;
-
-            public PackageCacheItem(string name, IPackageProvider provider) {
-                this.Name = name;
-                this.Provider = provider;
-            }
-
-            public bool TryGetPackage(string path, ConfigurationRuntime runtime, out Package package) {
-                if (_package != null) {
-                    package = _package;
-                    return true;
-                }
-
-                lock (this) {
-                    if (_package == null) {
-                        if (Provider.TryGetLocalPackage(path, Name, runtime, out package)) {
-                            _package = package;
-                        }
-                    }
-
-                    package = _package;
-                    return package != null;
-                }
-            }
+        private void packageProvider_Changed(object sender, EventArgs e) {
+            _loadedPackages.Clear();
+            _localPackages = null;
         }
 
         /// <summary>
@@ -265,7 +243,7 @@ namespace System.Configuration.Core {
         /// </summary>
         /// <returns>一个描述字符串。</returns>
         public override string ToString() {
-            return "Repository:" + this._path;
+            return "Repository" + Environment.NewLine + this._packageProvider.ToString();
         }
 
     }

@@ -7,13 +7,13 @@ namespace System.Configuration.Core {
     /// </summary>
     public class OpenDataContext {
 
-        public OpenDataContext(ConfigurationObjectBinder binder, QualifiedName key) {
+        public OpenDataContext(IConfigurationObjectBinder binder, QualifiedName key) {
             this._binder = binder;
             this._key = key;
         }
 
-        private readonly ConfigurationObjectBinder _binder;
-        public ConfigurationObjectBinder Binder {
+        private readonly IConfigurationObjectBinder _binder;
+        public IConfigurationObjectBinder Binder {
             get {
                 return _binder;
             }

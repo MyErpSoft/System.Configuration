@@ -5,7 +5,7 @@ namespace System.Configuration.Core {
     /// <summary>
     /// 描述命名空间和名称。
     /// </summary>
-    public struct FullName {
+    public struct FullName : IEquatable<FullName> {
 
         /// <summary>
         /// 返回命名空间
@@ -44,7 +44,7 @@ namespace System.Configuration.Core {
         public override bool Equals(object obj) {
             if (obj is FullName) {
                 FullName other = (FullName)obj;
-                return this.Name == other.Name && this.Namespace == other.Namespace;
+                return Equals((FullName)obj);
             }
 
             return false;
@@ -57,6 +57,15 @@ namespace System.Configuration.Core {
         public override int GetHashCode() {
             return (this.Namespace == null ? 0 : this.Namespace.GetHashCode()) ^
                     (this.Name == null ? 0 : this.Name.GetHashCode());
+        }
+
+        /// <summary>
+        /// 判断两个对象是否相等，如果是FullName对象，那么判断Namespace和Name是否都相等。区分大小写。
+        /// </summary>
+        /// <param name="other">要判断的对象。</param>
+        /// <returns>如果相等返回true，否则false.</returns>
+        public bool Equals(FullName other) {
+            return this.Name == other.Name && this.Namespace == other.Namespace;
         }
 
         /// <summary>
@@ -78,26 +87,7 @@ namespace System.Configuration.Core {
         public static bool operator !=(FullName x, FullName y) {
             return x.Name != y.Name || x.Namespace != y.Namespace;
         }
-
-        ///// <summary>
-        ///// 返回比较器。
-        ///// </summary>
-        //public static IEqualityComparer<FullName> Comparer {
-        //    get {
-        //        return new PartKeyEqualityComparer();
-        //    }
-        //}
-
-        //private sealed class PartKeyEqualityComparer : IEqualityComparer<FullName> {
-        //    public bool Equals(FullName x, FullName y) {
-        //        return x.Name == y.Name && x.Namespace == y.Namespace;
-        //    }
-
-        //    public int GetHashCode(FullName obj) {
-        //        return (obj.Namespace == null ? 0 : obj.Namespace.GetHashCode()) ^
-        //            (obj.Name == null ? 0 : obj.Name.GetHashCode());
-        //    }
-        //}
+        
     }
 
     

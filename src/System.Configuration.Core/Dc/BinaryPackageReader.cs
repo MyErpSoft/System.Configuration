@@ -4,7 +4,6 @@ using System.Configuration.Core.Metadata;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Threading;
 
 namespace System.Configuration.Core.Dc {
 
@@ -108,12 +107,12 @@ namespace System.Configuration.Core.Dc {
         private void OpenAllData(bool isAsynchronous) {
             //后台线程仍然继续，将数据解包。
             try {
-                var runtime = _sourcePackage.Runtime;
+                var binder = _sourcePackage.Repository.Binder;
 
                 foreach (var item in _allPairs) {
                     var basicPart = item.Value as BasicPart;
                     if (basicPart != null && !basicPart.IsOpened) {
-                        basicPart.OpenData(runtime);
+                        basicPart.OpenData(binder);
                     }
                 }
             }

@@ -1,6 +1,7 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration.Core.Collections;
+using System.Configuration.Core.Metadata;
+using System.Linq;
 
 namespace System.Configuration.Core {
 
@@ -8,8 +9,8 @@ namespace System.Configuration.Core {
     {
         //一组差量化的包，索引越小的其深度Depth越小，意味着在检索时优先级越低。
         private readonly Package[] _packages;
-        public CombinedPackage(Package[] packages, ConfigurationRuntime runtime) :
-            base(packages[0].Name, runtime) {
+        public CombinedPackage(Package[] packages, Repository repository) :
+            base(packages[0].Name, repository) {
             this._packages = packages;
         }
 
@@ -58,5 +59,6 @@ namespace System.Configuration.Core {
             Utilities.ThrowNotSupported("内部错误，GetPart失败。");
             return null;
         }
+
     }
 }

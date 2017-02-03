@@ -25,7 +25,7 @@ namespace System.Configuration.Core.Dc {
             get { return _type; }
         }
 
-        protected override void OpenDataCore(ConfigurationRuntime runtime) {
+        protected override void OpenDataCore(IConfigurationObjectBinder binder) {
             //等待后台线程将_data填充。
             if (!SpinWait.SpinUntil(this.DataIsFilled,60000)) {
                 Utilities.ThrowApplicationException(string.Format(CultureInfo.CurrentCulture,
@@ -43,7 +43,7 @@ namespace System.Configuration.Core.Dc {
                     //类型
                     var typeData = reader.ReadTypeData();
                     if (typeData.Type == null) {
-                        typeData.Type = runtime.Binders.BindToType(typeData.Name);
+                        typeData.Type = binder.BindToType(typeData.Name);
                     }
                     _type = typeData.Type;
 

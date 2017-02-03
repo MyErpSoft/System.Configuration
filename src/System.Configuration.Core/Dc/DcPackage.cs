@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Configuration.Core.Metadata;
 using System.IO;
 using System.Threading;
 
@@ -9,8 +10,8 @@ namespace System.Configuration.Core.Dc {
     /// </summary>
     internal sealed class DcPackage : BasicPackage {
 
-        internal DcPackage(string file, ConfigurationRuntime runtime)
-            : base(PlatformUtilities.Current.GetFileNameWithoutExtension(file), runtime) {
+        internal DcPackage(string file, Repository repository)
+            : base(PlatformUtilities.Current.GetFileNameWithoutExtension(file), repository) {
             this._file = file;
         }
 

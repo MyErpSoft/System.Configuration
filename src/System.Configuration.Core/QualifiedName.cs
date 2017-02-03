@@ -42,8 +42,7 @@
         /// <returns>如果相等返回true，否则false.</returns>
         public override bool Equals(object obj) {
             if (obj is QualifiedName) {
-                QualifiedName other = (QualifiedName)obj;
-                return this.FullName == other.FullName && string.Equals(this.PackageName, other.PackageName, StringComparison.OrdinalIgnoreCase);
+                return this.Equals((QualifiedName)obj);
             }
 
             //也支持对null的相等判断
@@ -59,7 +58,7 @@
         /// </summary>
         /// <returns>一个int32固定值。</returns>
         public override int GetHashCode() {
-            return this.FullName.GetHashCode() ^ (this.PackageName == null ? 0 : this.PackageName.ToUpperInvariant().GetHashCode());
+            return this.FullName.GetHashCode() ^ (this.PackageName == null ? 0 : StringComparer.OrdinalIgnoreCase.GetHashCode(this.PackageName));
         }
 
         /// <summary>
@@ -78,7 +77,7 @@
         /// <param name="y">要比较的第二个对象。</param>
         /// <returns>返回是否相等。</returns>
         public static bool operator ==(QualifiedName x, QualifiedName y) {
-            return x.FullName == y.FullName && string.Equals(x.PackageName, y.PackageName, StringComparison.OrdinalIgnoreCase);
+            return x.Equals(y);
         }
 
         /// <summary>
@@ -88,7 +87,7 @@
         /// <param name="y">要比较的第二个对象。</param>
         /// <returns>返回是否不相等。</returns>
         public static bool operator !=(QualifiedName x, QualifiedName y) {
-            return x.FullName != y.FullName || !string.Equals(x.PackageName, y.PackageName, StringComparison.OrdinalIgnoreCase);
+            return !x.Equals(y);
         }
     }
 }

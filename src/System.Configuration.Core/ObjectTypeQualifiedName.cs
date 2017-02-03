@@ -103,7 +103,7 @@
                 providerNameEndIndex = -1;
             }
             else {
-                providerName = string.Intern(str.Substring(0, providerNameEndIndex).Trim());
+                providerName = string.Intern((str.Substring(0, providerNameEndIndex).Trim()).ToLowerInvariant());
             }
             providerNameEndIndex++;
 
@@ -114,13 +114,14 @@
             if (objNamespaceEndIndex < 0) {
                 //可以没有命名空间，后续部分就完全是包名称。
                 objNamespace = null;
-                packageName = string.Intern(str.Substring(providerNameEndIndex).Trim());
+                packageName = str.Substring(providerNameEndIndex);
             }
             else {
                 //逗号前面是命名空间，后面是包
                 objNamespace = string.Intern(str.Substring(providerNameEndIndex, objNamespaceEndIndex - providerNameEndIndex).Trim());
-                packageName = string.Intern(str.Substring(objNamespaceEndIndex + 1).Trim());
+                packageName = str.Substring(objNamespaceEndIndex + 1);
             }
+            packageName = string.Intern((packageName.Trim()).ToLowerInvariant());
 
             return Create(providerName, objNamespace, null, packageName);
         }
@@ -164,12 +165,12 @@
         /// <summary>
         /// 使用clr类进行配置对象类型信息绑定的形式，例如在dcxml中指定xmlns="clr-namespace:System.Configuration.Core.Tests,System.Configuration.Core.Tests"
         /// </summary>
-        public const string ClrProviderName = "clr-namespace";
+        public readonly static string ClrProviderName = string.Intern("clr-namespace");
 
         /// <summary>
         /// 使用clr接口进行配置对象类型信息绑定的形式，例如在dcxml中指定xmlns="iclr-namespace:System.Configuration.Core.Tests,System.Configuration.Core.Tests"
         /// </summary>
-        public const string ClrInterfaceProviderName = "iclr-namespace";
+        public readonly static string ClrInterfaceProviderName = string.Intern("iclr-namespace");
 
         /// <summary>
         /// 内置clr-namespace的处理逻辑，减少对象ProviderName这个字段的占用。
