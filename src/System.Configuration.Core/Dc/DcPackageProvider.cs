@@ -34,7 +34,7 @@ namespace System.Configuration.Core.Dc {
         public bool TryGetLocalPackage(string packageName, Repository repository, out Package package) {
             //返回一个包对应的文件路径
             var packagePath = PlatformUtilities.Current.CombinePath(_path, packageName + ".dc");
-            package = new DcPackage(packagePath, repository);
+            package = new DcPackage(packagePath, repository.Binder);
             return true;
         }
 

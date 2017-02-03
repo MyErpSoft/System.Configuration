@@ -8,11 +8,17 @@
     </directory>
   </directory>
 
-  <!--差量包-->
+  <!--差量包 rep2 >> rep1 -->
   <directory name="rep2">
     <directory name="testPackage">
       <file name="DiffTest_2.dcxml" />
     </directory>
   </directory>
-  
+
+  <!--第三层的差量包 rep3 >> rep2 >> rep1-->
+  <directory name="rep3">
+    <directory name="testPackage">
+      <file name="DiffTest_3.dcxml" />
+    </directory>
+  </directory>
 </directory>

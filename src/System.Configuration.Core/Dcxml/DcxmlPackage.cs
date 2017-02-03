@@ -7,8 +7,8 @@ namespace System.Configuration.Core.Dcxml {
     internal class DcxmlPackage : BasicPackage {
 
         private string[] _files;
-        public DcxmlPackage(string packageName, Repository repository, string[] files)
-            : base(packageName, repository) {
+        public DcxmlPackage(string packageName, IConfigurationObjectBinder binder, string[] files)
+            : base(packageName, binder) {
             this._files = files;
         }
 
@@ -19,6 +19,14 @@ namespace System.Configuration.Core.Dcxml {
                     yield return part;
                 }
             }
+        }
+
+        public override string ToString() {
+            if (_files.Length > 0) {
+                return "DcxmlPackage:" + this.Name + "  {" + this._files[0] + "...}";
+            }
+
+            return base.ToString();
         }
 
         #region Xml namespace

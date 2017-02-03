@@ -50,7 +50,7 @@ namespace System.Configuration.Core.Dcxml {
                 return false;
             }
             else {
-                package = new DcxmlPackage(packageName, repository, files);
+                package = new DcxmlPackage(packageName, repository.Binder, files);
                 return true;
             }
         }

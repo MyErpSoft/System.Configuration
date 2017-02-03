@@ -10,8 +10,8 @@ namespace System.Configuration.Core.Dc {
     /// </summary>
     internal sealed class DcPackage : BasicPackage {
 
-        internal DcPackage(string file, Repository repository)
-            : base(PlatformUtilities.Current.GetFileNameWithoutExtension(file), repository) {
+        internal DcPackage(string file, IConfigurationObjectBinder binder)
+            : base(PlatformUtilities.Current.GetFileNameWithoutExtension(file), binder) {
             this._file = file;
         }
 
@@ -79,7 +79,7 @@ namespace System.Configuration.Core.Dc {
         }
 
         public override string ToString() {
-            return "DC:" + this._file;
+            return "DcPackage:" + this.Name + "  {" + this._file + "}";
         }
     }
 }

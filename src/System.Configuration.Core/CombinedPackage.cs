@@ -2,6 +2,7 @@
 using System.Configuration.Core.Collections;
 using System.Configuration.Core.Metadata;
 using System.Linq;
+using System.Text;
 
 namespace System.Configuration.Core {
 
@@ -9,8 +10,8 @@ namespace System.Configuration.Core {
     {
         //一组差量化的包，索引越小的其深度Depth越小，意味着在检索时优先级越低。
         private readonly Package[] _packages;
-        public CombinedPackage(Package[] packages, Repository repository) :
-            base(packages[0].Name, repository) {
+        public CombinedPackage(Package[] packages, IConfigurationObjectBinder binder) :
+            base(packages[0].Name, binder) {
             this._packages = packages;
         }
 
@@ -60,5 +61,17 @@ namespace System.Configuration.Core {
             return null;
         }
 
+        /// <summary>
+        /// 输出调试信息，包含内部提供者的输出。
+        /// </summary>
+        /// <returns>使用多行描述提供者的信息</returns>
+        public override string ToString() {
+            StringBuilder sb = new StringBuilder();
+            foreach (var package in _packages) {
+                sb.AppendLine(package.ToString());
+            }
+
+            return sb.ToString();
+        }
     }
 }

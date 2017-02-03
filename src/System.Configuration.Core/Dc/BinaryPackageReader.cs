@@ -107,7 +107,7 @@ namespace System.Configuration.Core.Dc {
         private void OpenAllData(bool isAsynchronous) {
             //后台线程仍然继续，将数据解包。
             try {
-                var binder = _sourcePackage.Repository.Binder;
+                var binder = _sourcePackage.Binder;
 
                 foreach (var item in _allPairs) {
                     var basicPart = item.Value as BasicPart;

@@ -10,7 +10,7 @@ namespace System.Configuration.Core {
     /// </summary>
     public abstract class BasicPackage : Package {
 
-        protected BasicPackage(string name, Repository repository) : base(name, repository) { }
+        protected BasicPackage(string name, IConfigurationObjectBinder binder) : base(name, binder) { }
 
         /// <summary>
         /// 派生类重载此方法，用于加载所有的部件。
@@ -78,7 +78,7 @@ namespace System.Configuration.Core {
         private void OpenData(ConfigurationObjectPart part) {
             var basicPart = part as BasicPart;
             if (basicPart != null && !basicPart.IsOpened) {
-                basicPart.OpenData(this.Repository.Binder);
+                basicPart.OpenData(this.Binder);
             }
         }
     }

@@ -33,6 +33,15 @@ namespace System.Configuration.Core.Tests {
             AssertRep1(rep1);
             rep2 = new Repository(this.RootDirectory.Path + @"\rep2", rep1);
             AssertRep2(rep2);
+
+            //当在rep1检索testPackage时，返回的应该是本地的Package对象，而在rep2中返回的是合并后的
+            Assert.AreNotEqual(rep1.GetPackage("testPackage"), rep2.GetPackage("testPackage"));
+
+            //增加第三层的差量测试。
+            Repository rep3 = new Repository(this.RootDirectory.Path + @"\rep3", rep2);
+            AssertRep3(rep3);
+            //都是合并的包，但是对应的合并对象不同。
+            Assert.AreNotEqual(rep2.GetPackage("testPackage"), rep3.GetPackage("testPackage"));
         }
 
         private static void AssertRep2(Repository rep2) {
@@ -54,6 +63,21 @@ namespace System.Configuration.Core.Tests {
 
             win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "f3", "testPackage"));
             Assert.AreEqual("demo3", win.Text);
+        }
+
+        private static void AssertRep3(Repository rep3) {
+            ConfigurationWorkspace wp = new ConfigurationWorkspace(rep3);
+            Window win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "f1", "testPackage"));
+            Assert.AreEqual("demo1", win.Text);
+
+            win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "f2", "testPackage"));
+            Assert.AreEqual("demo2", win.Text);
+
+            win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "f3", "testPackage"));
+            Assert.AreEqual("demo4 new", win.Text);
+
+            win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "f4", "testPackage"));
+            Assert.AreEqual("demo4", win.Text);
         }
     }
 }

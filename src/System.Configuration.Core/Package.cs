@@ -8,18 +8,18 @@ namespace System.Configuration.Core {
     /// </summary>
     public abstract class Package {
         private readonly string _name;
-        private readonly Repository _repository;
+        private readonly IConfigurationObjectBinder _binder;
 
-        protected Package(string name, Repository repository) {
+        protected Package(string name, IConfigurationObjectBinder binder) {
             if (string.IsNullOrEmpty(name)) {
                 Utilities.ThrowArgumentNull(nameof(name));
             }
-            if (repository == null) {
-                Utilities.ThrowArgumentNull(nameof(repository));
+            if (binder == null) {
+                Utilities.ThrowArgumentNull(nameof(binder));
             }
 
             this._name = name;
-            this._repository = repository;
+            this._binder = binder;
         }
 
         /// <summary>
@@ -28,10 +28,10 @@ namespace System.Configuration.Core {
         public string Name { get { return this._name; } }
 
         /// <summary>
-        /// 返回包所在的仓库。
+        /// 返回关联的类型绑定器。
         /// </summary>
-        public Repository Repository {
-            get { return this._repository; }
+        public IConfigurationObjectBinder Binder {
+            get { return this._binder; }
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace System.Configuration.Core {
         public abstract IEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>> GetParts();
 
         public override string ToString() {
-            return this.Name;
+            return "Package:" + this.Name;
         }
     }
 }
