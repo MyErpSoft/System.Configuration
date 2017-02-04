@@ -35,7 +35,11 @@ namespace System.Configuration.Core.Collections {
         }
 
         #region IEnumerable
-        public IEnumerator<T> GetEnumerator() {
+        public Enumerator GetEnumerator() {
+            return new Enumerator(_first);
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() {
             return new Enumerator(_first);
         }
 

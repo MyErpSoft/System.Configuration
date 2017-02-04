@@ -103,7 +103,7 @@
                 providerNameEndIndex = -1;
             }
             else {
-                providerName = string.Intern((str.Substring(0, providerNameEndIndex).Trim()).ToLowerInvariant());
+                providerName = (str.Substring(0, providerNameEndIndex).Trim()).ToLowerInvariant();
             }
             providerNameEndIndex++;
 
@@ -207,7 +207,7 @@
         private sealed class BasicTypeQualifiedName : ObjectTypeQualifiedName {
 
             public BasicTypeQualifiedName(string providerName, QualifiedName qualifiedName) : base(qualifiedName) {
-                _providerName = providerName;
+                _providerName = string.Intern(providerName); //第三方的提供者在这里公用字符串引用。
             }
 
             private readonly string _providerName;

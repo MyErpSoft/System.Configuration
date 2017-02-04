@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,15 @@ namespace System.Configuration.Core.Tests {
             //QueryProjectContainerElement container = new QueryProjectContainerElement(new Tests.DependencyObject(QueryProjectContainerElement.DefaultType));
             XDocument doc = XDocument.Load(RootDirectory.Path + @"\rep1\QueryProjectContainer.dcxml");
             var queryProjectContainer = Read(doc.Root);
+        }
+
+        [TestMethod]
+        public void TestReadFileTime() {
+            //192ms
+            using (var stream = File.OpenRead(@"C:\Tools\BusinessObjects.zip")) {
+                var buffer = new byte[stream.Length];
+                stream.Read(buffer, 0, (int)stream.Length);
+            }
         }
 
         private static DependencyObject Read(XElement element) {

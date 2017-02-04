@@ -11,6 +11,10 @@ namespace System.Configuration.Core {
     /// <summary>
     /// 类似Nuget的Repository，或者.net的Framework的概念，是Package的承载容器。
     /// </summary>
+    /// <remarks>
+    /// <para>此类的职责是，作为Package的承载容器，通过名称可以检索到Package。</para>
+    /// <para>其次，提供库的依赖管理，允许在检索时检索到差量的包。</para>
+    /// </remarks>
     public class Repository {
 
         #region 构造函数
@@ -234,8 +238,8 @@ namespace System.Configuration.Core {
         }
 
         private void packageProvider_Changed(object sender, EventArgs e) {
-            _loadedPackages.Clear();
             _localPackages = null;
+            _loadedPackages.Clear();
         }
 
         /// <summary>

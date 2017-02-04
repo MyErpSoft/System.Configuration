@@ -6,6 +6,9 @@ namespace System.Configuration.Core {
     /// <summary>
     /// 描述了一个包对象。
     /// </summary>
+    /// <remarks>
+    /// <para>提供零部件的检索能力，是零部件的承载容器。但基础实现未包含承载的具体实现。</para>
+    /// </remarks>
     public abstract class Package {
         private readonly string _name;
         private readonly IConfigurationObjectBinder _binder;

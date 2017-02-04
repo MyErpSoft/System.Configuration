@@ -46,7 +46,7 @@ namespace System.Configuration.Core.Dc {
                     //Thread readOtherThread = new Thread(this.ReadOtherAsyn);
                     //readOtherThread.Name = "Read Package " + _sourcePackage.Name;
                     //readOtherThread.Start();
-                    System.Threading.Tasks.Task.Run(new Action(this.ReadOtherAsyn));
+                    Threading.Tasks.Task.Run(new Action(this.ReadOtherAsyn));
                 }
 
                 return _allPairs;

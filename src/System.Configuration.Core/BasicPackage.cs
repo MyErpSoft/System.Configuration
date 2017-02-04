@@ -6,7 +6,7 @@ using System.Globalization;
 namespace System.Configuration.Core {
 
     /// <summary>
-    /// 基础的包实现。
+    /// 基础的包实现，内部提供字典承载零部件。
     /// </summary>
     public abstract class BasicPackage : Package {
 
