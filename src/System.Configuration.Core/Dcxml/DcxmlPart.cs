@@ -26,8 +26,8 @@ namespace System.Configuration.Core.Dcxml {
             get { return _type; }
         }
 
-        protected override void OpenDataCore(IConfigurationObjectBinder binder) {
-            var dt = binder.BindToType(_typeName);
+        protected override void OpenDataCore() {
+            var dt = _file.Package.Binder.BindToType(_typeName);
             _type = dt;
 
             foreach (var item in _data.Elements()) {

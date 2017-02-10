@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Configuration.Core.Metadata;
 using System.Linq;
 
 namespace System.Configuration.Core.Dc {
 
-    internal abstract class ObjectGeneratorBase<T,TValue> where T : class {
+    internal abstract class ObjectGeneratorBase<T,TValue> : IEnumerable<TValue> where T : class {
         private Dictionary<T, TValue> _dict;
 
         public ObjectGeneratorBase() {
@@ -13,6 +14,10 @@ namespace System.Configuration.Core.Dc {
 
         protected Dictionary<T, TValue> Dictionary {
             get { return _dict; }
+        }
+
+        public IEnumerator<TValue> GetEnumerator() {
+            return _dict.Values.GetEnumerator();
         }
 
         public TValue GetId(T data) {
@@ -33,11 +38,17 @@ namespace System.Configuration.Core.Dc {
         }
 
         protected abstract TValue CreateValue(T data);
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return _dict.Values.GetEnumerator();
+        }
     }
 
     internal sealed class ObjectIDGenerator<T> : ObjectGeneratorBase<T,int> where T:class {
         private int _maxOrder;
-        
+
+        public int Count { get { return Dictionary.Count; } }
+
         protected override int CreateValue(T data) {
             _maxOrder++;
             return _maxOrder;
@@ -58,6 +69,38 @@ namespace System.Configuration.Core.Dc {
 
         public ObjectTypeData[] GetItems() {
             return (from p in base.Dictionary orderby p.Value.Order select p.Value).ToArray();
+        }
+    }
+
+    internal sealed class WriterPartDataCollection : IEnumerable<PartData> {
+        private int _maxOrder;
+        private Dictionary<FullName, PartData> _dict = new Dictionary<FullName, PartData>();
+
+        public PartData Register(FullName fullName, ConfigurationObjectPart part) {
+            PartData partData;
+            if (!_dict.TryGetValue(fullName,out partData)) {
+                _maxOrder++; //注意part是从1计数的 ，虽然也可以从0计数，但考虑到与String的设计一致。
+                partData = new PartData(fullName, part) { Order = _maxOrder };
+                _dict.Add(fullName, partData);                
+            }
+            
+            return partData;
+        }
+
+        public int GetId(FullName fullName) {
+            return _dict[fullName].Order;
+        }
+
+        public PartData[] GetItems() {
+            return (from p in _dict orderby p.Value.Order select p.Value).ToArray();
+        }
+
+        public IEnumerator<PartData> GetEnumerator() {
+            return _dict.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return _dict.Values.GetEnumerator();
         }
     }
 
@@ -89,18 +132,17 @@ namespace System.Configuration.Core.Dc {
     }
 
     internal sealed class PartData {
-        public PartData(FullName key, ConfigurationObjectPart value, PackageWriteContext ctx) {
-            var stringDict = ctx.StringDict;
-
-            Namespace = stringDict.GetId(key.Namespace);
-            Name = stringDict.GetId(key.Name);
-
+        public PartData(FullName key, ConfigurationObjectPart value) {
+            this.FullName = key;
             this.Part = value;
         }
         public ConfigurationObjectPart Part { get; set; }
         
-        public int Namespace { get; set; }
-        public int Name { get; set; }
+        public FullName FullName { get; set; }
+
+        public int Order { get; set; }
+
+        public byte[] Data { get; set; }
     }
 
     internal sealed class ObjectTypeData {
@@ -109,6 +151,7 @@ namespace System.Configuration.Core.Dc {
         }
         public IType Type { get; set; }
         public int Order { get; set; }
+
 
         private ObjectIDGenerator<IProperty> _properties;
         /// <summary>

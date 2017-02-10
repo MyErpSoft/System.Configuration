@@ -27,7 +27,7 @@ namespace System.Configuration.Core.Tests {
             var source = rep.GetPackage("testPackage");
 
             //创建二进制dc
-            BinaryPackageWriter.ConvertToDc(file, source);
+            DcPackageWriter.ConvertToDc(file, source);
             AssertValues("testPackage3");
         }
 
@@ -41,7 +41,7 @@ namespace System.Configuration.Core.Tests {
             var source = rep.GetPackage("testPackage");
 
             //创建二进制dc
-            BinaryPackageWriter.ConvertToDc(file, source);
+            DcPackageWriter.ConvertToDc(file, source);
             AssertValues("testPackage2");
         }
         
@@ -76,7 +76,7 @@ namespace System.Configuration.Core.Tests {
             var source = rep.GetPackage("BigPackage");
 
             //创建二进制dc
-            BinaryPackageWriter.ConvertToDc(file, source);
+            DcPackageWriter.ConvertToDc(file, source);
 
             System.Diagnostics.Stopwatch w = new Diagnostics.Stopwatch();
             w.Start();

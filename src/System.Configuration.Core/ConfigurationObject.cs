@@ -60,7 +60,10 @@ namespace System.Configuration.Core {
             //负责引用指针的转换
             var value = this.GetValueCore(property);
 
-            if (value is ObjectPtr) {
+            if (value == null) {
+                return ObjectPtr.None;
+            }
+            else if (value is ObjectPtr) {
                 ObjectPtr refValue = (ObjectPtr)value;
                 value = _workspace.GetObject(refValue.Name);
             }

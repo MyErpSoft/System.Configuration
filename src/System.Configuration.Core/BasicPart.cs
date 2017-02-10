@@ -5,10 +5,6 @@ using System.Configuration.Core.Metadata;
 namespace System.Configuration.Core {
 
     internal abstract class BasicPart : ConfigurationObjectPart {
-
-        protected BasicPart() {
-            this._values = new Dictionary<IProperty, object>(ReferenceEqualityComparer<IProperty>.Default);
-        }
         
         private Dictionary<IProperty, object> _values;
 
@@ -21,10 +17,18 @@ namespace System.Configuration.Core {
         /// <param name="value">如果检索到有效的定义将返回他，否则返回null</param>
         /// <returns>如果检索到有效的定义将返回true</returns>
         public override bool TryGetLocalValue(IProperty property, out object value) {
+            if (!_isOpened) {
+                OpenData();
+            }
+
             return _values.TryGetValue(property, out value);
         }
         
         public override bool TryGetLocalListValue(IProperty property, out IEnumerable<ListDifferenceItem> list) {
+            if (!_isOpened) {
+                OpenData();
+            }
+
             object value;
             if (_values.TryGetValue(property, out value)) {
                 list = (IEnumerable<ListDifferenceItem>)value;
@@ -44,19 +48,35 @@ namespace System.Configuration.Core {
         }
 
         public override IEnumerable<KeyValuePair<IProperty, object>> GetLocalValues() {
+            if (!_isOpened) {
+                OpenData();
+            }
+
             return new ReadOnlyEnumerable<KeyValuePair<IProperty, object>>(_values);
         }
         #endregion
 
        #region Open
-        private volatile bool _isOpened; 
+        private volatile bool _isOpened;
+        private Exception _openDataException;
 
-        internal void OpenData(IConfigurationObjectBinder binder) {
-            if (!_isOpened) {
-                lock (this) {
-                    if (!_isOpened) {
-                        this.OpenDataCore(binder);
+        internal void OpenData() {
+            lock (this) {
+                if (!_isOpened) {
+                    //数据无效，永远不能使用。
+                    if (_openDataException != null) {
+                        throw _openDataException;
+                    }
+
+                    this._values = new Dictionary<IProperty, object>(ReferenceEqualityComparer<IProperty>.Default);
+                    try {
+                        this.OpenDataCore();
                         _isOpened = true;
+                    }
+                    catch (Exception ex) {
+                        //当展开失败后，此对象将永远不能使用。
+                        _openDataException = ex;
+                        throw;   
                     }
                 }
             }
@@ -74,7 +94,7 @@ namespace System.Configuration.Core {
         /// <summary>
         /// 派生类重载此方法，将原始的数据解开填充到当前数据包中。
         /// </summary>
-        protected abstract void OpenDataCore(IConfigurationObjectBinder binder);
+        protected abstract void OpenDataCore();
         #endregion
     }
 }

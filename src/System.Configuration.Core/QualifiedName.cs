@@ -27,6 +27,16 @@
         public readonly FullName FullName;
 
         /// <summary>
+        /// 返回命名空间
+        /// </summary>
+        public string Namespace { get { return FullName.Namespace; } }
+
+        /// <summary>
+        /// 返回名称。
+        /// </summary>
+        public string Name { get { return FullName.Name; } }
+
+        /// <summary>
         /// 输出调试用的字符串，类似 mynamespace.name,packageName 这样的形式。
         /// </summary>
         /// <returns>一个字符串。</returns>

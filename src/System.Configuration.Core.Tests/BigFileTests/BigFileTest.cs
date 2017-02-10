@@ -31,7 +31,7 @@ namespace System.Configuration.Core.Tests {
         [TestMethod]
         public void TestReadFileTime() {
             //192ms
-            using (var stream = File.OpenRead(@"C:\Tools\BusinessObjects.zip")) {
+            using (var stream = File.OpenRead(@"C:\E10\BusinessObjects.zip")) {
                 var buffer = new byte[stream.Length];
                 stream.Read(buffer, 0, (int)stream.Length);
             }
