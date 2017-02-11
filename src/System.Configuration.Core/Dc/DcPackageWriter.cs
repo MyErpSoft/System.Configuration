@@ -73,11 +73,7 @@ namespace System.Configuration.Core.Dc {
 
                 //将零件的类型也登记，这样每个类型都有唯一的序号。也方便ScanningObjectTypeProviders直接循环用到的类型
                 var typeData = _typeDict.GetId(pair.Value.Type);
-
-                // 对象类型（IType）的ProviderName，例如：clr-namespace，
-                //    但是IType上的其他属性不做此处理，因为读取时根据名称先转换为ClrType，此时用不到InternString的特性。                
-                _stringDict.GetId(pair.Value.Type.QualifiedName.ProviderName);
-
+                
                 // 同理，实际值中如果存在对象指针，其namespace,packageName也基于对象的查找
                 foreach (var valuePair in pair.Value.GetLocalValues()) {
                     //每个Type用到的属性也会编号
@@ -92,7 +88,12 @@ namespace System.Configuration.Core.Dc {
                         }
                     }
                 }
+            }
 
+            foreach (var typeDataItem in _typeDict) {
+                // 对象类型（IType）的ProviderName，例如：clr-namespace，
+                //    但是IType上的其他属性不做此处理，因为读取时根据名称先转换为ClrType，此时用不到InternString的特性。                
+                _stringDict.GetId(typeDataItem.Type.QualifiedName.ProviderName);
             }
 
             //记住InternString的大小，后面还要添加字符串，最后写入文件时容易处理。
@@ -102,8 +103,12 @@ namespace System.Configuration.Core.Dc {
         private bool RegisterObjectPtr(object value) {
             if (value is ObjectPtr) {
                 var ptr = (ObjectPtr)value;
-                _stringDict.GetId(ptr.Name.PackageName);
-                _stringDict.GetId(ptr.Name.Namespace);
+                //本Package的对象指针不用处理，因为最终会转换为 本地对象指针，不用描述PackageName，namespace等。
+                if (!string.Equals(ptr.Name.PackageName, _sourcePackageName, StringComparison.OrdinalIgnoreCase)) {
+                    _stringDict.GetId(ptr.Name.PackageName);
+                    _stringDict.GetId(ptr.Name.Namespace);
+                }
+
                 return true;
             }
 
@@ -168,18 +173,16 @@ namespace System.Configuration.Core.Dc {
             foreach (var typeData in typeDatas) {
 
                 var tName = typeData.Type.QualifiedName;
-                _writer.Write(_stringDict.GetId(tName.ProviderName));
-                _writer.Write(_stringDict.GetId(tName.Namespace));
-                _writer.Write(_stringDict.GetId(tName.Name));
-                _writer.Write(_stringDict.GetId(tName.PackageName));
-
-                _writer.Write(typeData.Properties.Count);
+                _writer.Write7BitInt(_stringDict.GetId(tName.ProviderName));
+                _writer.Write7BitInt(_stringDict.GetId(tName.Namespace));
+                _writer.Write7BitInt(_stringDict.GetId(tName.Name));
+                _writer.Write7BitInt(_stringDict.GetId(tName.PackageName));
 
                 //使用到的属性清单。
                 var properties = typeData.Properties.GetItems();
-                _writer.Write(properties.Length);
+                _writer.Write7BitInt(properties.Length);
                 foreach (var property in properties) {
-                    _writer.Write(_stringDict.GetId(property.Name));
+                    _writer.Write7BitInt(_stringDict.GetId(property.Name));
                 }
             }
         }

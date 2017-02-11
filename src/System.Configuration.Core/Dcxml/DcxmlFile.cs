@@ -89,7 +89,8 @@ namespace System.Configuration.Core.Dcxml {
                               "在dcxml：{0}中定义的命名空间 {1} 不准确，必须是字母、数字和下划线。", this.FileName, name));
                             }
 
-                            name = string.Intern(name);
+                            //由于同一个命名空间下名称都是不重复的，所以将name做Intern处理意义不大。
+                            //name = string.Intern(name);
                             var objTypeName = GetTypeName(item.Name);
 
                             yield return new KeyValuePair<FullName, ConfigurationObjectPart>(

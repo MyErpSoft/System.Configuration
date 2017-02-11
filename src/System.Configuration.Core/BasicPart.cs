@@ -8,8 +8,12 @@ namespace System.Configuration.Core {
         
         private Dictionary<IProperty, object> _values;
 
+        internal BasicPart() {
+            this._values = new Dictionary<IProperty, object>(ReferenceEqualityComparer<IProperty>.Default);
+        }
+
         #region TryGetValue
-        
+
         /// <summary>
         /// 返回部件内部存储的值，如果内部有定义值将返回他。
         /// </summary>
@@ -17,18 +21,10 @@ namespace System.Configuration.Core {
         /// <param name="value">如果检索到有效的定义将返回他，否则返回null</param>
         /// <returns>如果检索到有效的定义将返回true</returns>
         public override bool TryGetLocalValue(IProperty property, out object value) {
-            if (!_isOpened) {
-                OpenData();
-            }
-
             return _values.TryGetValue(property, out value);
         }
         
         public override bool TryGetLocalListValue(IProperty property, out IEnumerable<ListDifferenceItem> list) {
-            if (!_isOpened) {
-                OpenData();
-            }
-
             object value;
             if (_values.TryGetValue(property, out value)) {
                 list = (IEnumerable<ListDifferenceItem>)value;
@@ -48,10 +44,6 @@ namespace System.Configuration.Core {
         }
 
         public override IEnumerable<KeyValuePair<IProperty, object>> GetLocalValues() {
-            if (!_isOpened) {
-                OpenData();
-            }
-
             return new ReadOnlyEnumerable<KeyValuePair<IProperty, object>>(_values);
         }
         #endregion
@@ -68,7 +60,6 @@ namespace System.Configuration.Core {
                         throw _openDataException;
                     }
 
-                    this._values = new Dictionary<IProperty, object>(ReferenceEqualityComparer<IProperty>.Default);
                     try {
                         this.OpenDataCore();
                         _isOpened = true;

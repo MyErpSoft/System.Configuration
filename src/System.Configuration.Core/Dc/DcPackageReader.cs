@@ -2,6 +2,7 @@
 using System.Configuration.Core.Metadata;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 /* 
 * 文件读取流程说明：
@@ -56,13 +57,11 @@ namespace System.Configuration.Core.Dc {
         private int[] _partEndOffsets;                          //每个零件在数据块中结束位置
         private byte[] _data;                                   //数据的二进制形式
 
-        public int Count { get { return _objectIds.Length; } }
-
         /// <summary>
         /// 读取所有的零件，并返回这些零件与名称的对应关系。
         /// </summary>
         /// <returns>一个数组，包含零件名称和零件。</returns>
-        public IEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>> ReadParts() {
+        public KeyValuePair<FullName, ConfigurationObjectPart>[] ReadParts() {
 
             try {
                 //1 读取文件头
@@ -80,7 +79,7 @@ namespace System.Configuration.Core.Dc {
                 //6 读取对应的二进制数据
                 this.ReadData();
 
-                return this.GetParts();
+                return this.GetParts().ToArray();
             }
             catch (EndOfStreamException) {
                 Utilities.ThrowApplicationException(string.Format(CultureInfo.CurrentCulture,
@@ -113,37 +112,27 @@ namespace System.Configuration.Core.Dc {
             _types.Capacity = _types.Count + count;
 
             //使用4个int描述的ObjectType，最后一个描述属性总数
-            int[] objectTypeInt = new int[5];
-            int[] propertyIndexs = null;
-
             for (int i = 0; i < count; i++) {
                 //对象类型信息的描述，
-                _reader.ReadIntArray(objectTypeInt, 5);
-
-                var providerName = _strings[objectTypeInt[0]];
-                var objNamespace = _strings[objectTypeInt[1]];
-                var name = _strings[objectTypeInt[2]];
-                var packageName = _strings[objectTypeInt[3]];
+                var providerName = _strings[_reader.Read7BitInt()];
+                var objNamespace = _strings[_reader.Read7BitInt()];
+                var name = _strings[_reader.Read7BitInt()];
+                var packageName = _strings[_reader.Read7BitInt()];
 
                 var typeData = new ObjectTypeReadData() {
                     Name = ObjectTypeQualifiedName.Create(providerName, objNamespace, name, packageName)
                 };
 
                 //使用到的属性清单,
-                var propertyCount = objectTypeInt[4];
+                var propertyCount = _reader.Read7BitInt();
                 var properties = typeData.Properties;
                 properties.Capacity = properties.Count + propertyCount;
-                if (propertyIndexs == null || propertyIndexs.Length < propertyCount) {
-                    propertyIndexs = new int[Math.Max(propertyCount, 32)];
-                }
-
-                _reader.ReadIntArray(propertyIndexs, propertyCount);
 
                 for (int j = 0; j < propertyCount; j++) {
                     properties.Add(
                         new ObjectPropertyReadData() {
                             //这里Name是属性的名称，注意有个特殊的属性，即Base
-                            Name = _strings[propertyIndexs[j]]
+                            Name = _strings[_reader.Read7BitInt()]
                         });
                 }
 

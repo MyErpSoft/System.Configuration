@@ -23,7 +23,7 @@ namespace System.Configuration.Core.Dc {
             //写入总共多少，以便读取时知道什么时候结束了。
             this.Write7BitEncodedInt(size);
 
-            for (int i = startIndex; i < size; i++) {
+            for (int i = startIndex; i < size + startIndex; i++) {
                 this.Write(strings[i]);//不能出现null.
             }
         }

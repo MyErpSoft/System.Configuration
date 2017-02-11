@@ -34,19 +34,15 @@ namespace System.Configuration.Core.Dc {
                 _reader = new DcPackageReader(stream, this);
 
                 var parts = _reader.ReadParts();
-                _partCount = _reader.Count;
+                _partCount = parts.Length;
             
+                //开启后台任务，将各自零件OpenData
+                Threading.Tasks.Task.Run(new Action(this.OpenAllData));
+
                 return parts;
             }
         }
-
-        protected override void OnLoaded() {
-            base.OnLoaded();
-
-            //开启后台任务，将各自零件OpenData
-            Threading.Tasks.Task.Run(new Action(this.OpenAllData));
-        }
-
+        
         private void OpenAllData() {
             //后台线程仍然继续，将数据解包。
             foreach (var item in GetParts()) {
@@ -74,6 +70,10 @@ namespace System.Configuration.Core.Dc {
                 //这里不必调用Close，流在LoadPartsCore后，就已经关闭。
                 this._reader = null;
             }
+        }
+
+        protected override bool IsAllPartsOpened {
+            get { return _reader == null; }
         }
 
         public override string ToString() {

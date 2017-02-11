@@ -19,11 +19,22 @@ namespace System.Configuration.Core {
         protected abstract IEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>> LoadPartsCore();
 
         /// <summary>
+        /// 派生类重载此属性返回是否所有的零件已经完成展开操作，就不必在GetParts扫描所有数据了。
+        /// </summary>
+        protected virtual bool IsAllPartsOpened { get { return false; } }
+
+        /// <summary>
         /// 用于返回所有的部件。
         /// </summary>
         /// <returns>可枚举的部件集合，所有部件必须完成命名的检查，以及让所有命名字符串公用字符串引用。</returns>
         public override IEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>> GetParts() {
             var parts = _parts ?? this.LoadParts();
+            if (!IsAllPartsOpened) {
+                foreach (var part in parts) {
+                    OpenData(part.Value);
+                }
+            }
+            
             return new ReadOnlyEnumerable<KeyValuePair<FullName, ConfigurationObjectPart>>(parts);
         }
 
@@ -63,7 +74,19 @@ namespace System.Configuration.Core {
 
         public sealed override bool TryGetPart(FullName fullName, out ConfigurationObjectPart part) {
             var parts = _parts ?? this.LoadParts();
+            if (parts.TryGetValue(fullName, out part)) {
+                OpenData(part);
+
+                return true;
+            }
             return parts.TryGetValue(fullName, out part);
+        }
+
+        private void OpenData(ConfigurationObjectPart part) {
+            var basicPart = part as BasicPart;
+            if (basicPart != null && !basicPart.IsOpened) {
+                basicPart.OpenData();
+            }
         }
 
         /// <summary>
