@@ -1,7 +1,24 @@
-System.Configuration
-====================
+欢迎您进入 MyErpSoft 的 System.Configuration 的世界。
 
-MyErpSoft basic component,It's can read or write difference configuration file.
-ex, ERP software define 3 columns in browser view,but company(ERP customer) think add a column, end user think remove a column. Difference configuration component is do it.
+这是ERP的核心组件：配置系统，通过他我们可以快速、简单的构建ERP等复杂应用系统。那么他是如何做到的呢？
 
-please see https://github.com/MyErpSoft/System.Configuration/wiki
+## 配置ERP而不是编写 ERP
+现代软件技术快速发展，从当时的DOS到后面的Windows、再发展到Web，以及现在的移动应用，这都需要ERP厂商不断的使用各种编程语言和开发平台来开发对应的ERP产品，但这也造成了巨大的开发和维护成本。
+
+MyErpSoft致力于`尽可能的配置ERP而不是编写ERP`的事业中，我们希望将ERP的核心业务信息以规范化数据存储（例如Xml），然后配合各个技术平台开发解释引擎，从而节约成本。
+
+配置ERP的另外一个好处是，降低了ERP的开发门槛，让懂业务的人也可以开发常用的功能，而无须学习复杂的编程语言，从而更进一步的降低成本。
+
+## 支持差量
+现代ERP越来越庞大，但也越来越个性化，这就要求更多的二开开发，MyErpSoft的配置系统内建对二次开发的支持。二次开发商可以建立自己的知识库(Repository)，开发自己的新功能，最关键是能够在二次开发中修改现有对象的信息，而这些改动信息全部存储在自己的知识库。
+
+通过这样的差量化设计，二次开发商很容易分发他的个性化开发，因为他分发的是他定制的部分。当原始开发商升级他的系统时，二次开发商的成果通过差量化得以平滑的支持，无须任何动作即可在新版本下使用。
+
+差量化不仅仅可以用在二次开发过程，还可以用来多语言的处理，还可以用在用户自定义信息的处理等等。
+
+MyErpSoft配置系统的核心理念是：`软件即观点的描述。`
+
+## 对继承、混合的支持
+此配置系统不是简单IOC系统，他学习了编程语言的各种特性，实现了面向对象的继承特性，从而提高了开发效率。
+
+具体文档请参见： https://github.com/MyErpSoft/System.Configuration/wiki
