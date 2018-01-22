@@ -29,5 +29,7 @@ namespace System.Configuration.Core {
         public abstract Stream Open(string path, FileMode mode, FileAccess access, FileShare share);
 
         public abstract string GetFileNameWithoutExtension(string path);
+
+        public abstract string GetFileName(string path);
     }
 }

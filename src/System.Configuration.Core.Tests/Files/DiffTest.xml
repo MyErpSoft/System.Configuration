@@ -19,6 +19,10 @@
   <directory name="rep3">
     <directory name="testPackage">
       <file name="DiffTest_3.dcxml" />
+      <file name="DiffTest_3_2.dcxml" />
+    </directory>
+    <directory name="my.testPackage2">
+      <file name="DiffTest_3_3.dcxml" />
     </directory>
   </directory>
 </directory>

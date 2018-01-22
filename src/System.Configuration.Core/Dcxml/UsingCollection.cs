@@ -80,7 +80,7 @@ namespace System.Configuration.Core.Dcxml {
 
             if (index < 0) {
                 //没有包描述， ex:company.erp
-                fullName = item.Trim();
+                fullName = item.Substring(colonIndex).Trim();
                 packageName = null;
             }
             else {

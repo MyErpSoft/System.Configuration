@@ -8,7 +8,7 @@ namespace System.Configuration.Core {
             return Path.Combine(path1, path2);
         }
 
-        public override string[] GetFiles(string path,string searchPattern, bool topDirectoryOnly) {
+        public override string[] GetFiles(string path, string searchPattern, bool topDirectoryOnly) {
             return Directory.GetFiles(path, searchPattern, topDirectoryOnly ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
         }
 
@@ -22,6 +22,10 @@ namespace System.Configuration.Core {
 
         public override string GetFileNameWithoutExtension(string path) {
             return Path.GetFileNameWithoutExtension(path);
+        }
+
+        public override string GetFileName(string path) {
+            return Path.GetFileName(path);
         }
     }
 }

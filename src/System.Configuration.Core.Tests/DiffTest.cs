@@ -78,6 +78,26 @@ namespace System.Configuration.Core.Tests {
 
             win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "f4", "testPackage"));
             Assert.AreEqual("demo4", win.Text);
+
+            //利用x:base 测试 对象指针的能力,具体测试目的参考dcxml的描述
+            win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "f5", "testPackage"));
+            Assert.AreEqual("demo4", win.Text);
+
+            win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "f6", "testPackage"));
+            Assert.AreEqual("demo1", win.Text);
+
+            win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "f7", "testPackage"));
+            Assert.AreEqual("demo2.f1", win.Text);
+
+            win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "f8", "testPackage"));
+            Assert.AreEqual("demo2.f1 at my.testPackage2", win.Text);
+
+            //使用前缀
+            win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "f9", "testPackage"));
+            Assert.AreEqual("demo2.f1", win.Text);
+
+            win = (Window)wp.GetObject(new QualifiedName("company.erp.demo", "f10", "testPackage"));
+            Assert.AreEqual("demo2.f1 at my.testPackage2", win.Text);
         }
     }
 }

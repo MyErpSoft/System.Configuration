@@ -28,8 +28,10 @@ namespace System.Configuration.Core.Dcxml {
         }
         
         public IEnumerable<PackageItem> GetPackageItems() {
+            //这里不能调用GetFileNameWithoutExtension，因为我们允许Package的名称是带点号的
+            //例如：my.testPackage2     参见 DiffTest.cs 中的f8 对象。
             return from p in PlatformUtilities.Current.GetDirectories(_path, "*", true)
-                   select new PackageItem(PlatformUtilities.Current.GetFileNameWithoutExtension(p), this);
+                   select new PackageItem(PlatformUtilities.Current.GetFileName(p), this);
         }
 
         public bool TryGetLocalPackage(string packageName, Repository repository, out Package package) {

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--与 DiffTest_3.dcxml 同一个Repository，不同Package，但与DiffTest_3_2.dcxml是同一个命名空间，不同Package-->
+<x:ObjectContainer
+               xmlns="clr-namespace:System.Configuration.Core.Tests,System.Configuration.Core.Tests"
+               xmlns:x="http://schemas.myerpsoft.com/configuration/2015"
+               x:namespace="company.erp.demo2">
+
+  <Window x:name="f1" >
+    <Text>demo2.f1 at my.testPackage2</Text>
+  </Window>
+
+</x:ObjectContainer>

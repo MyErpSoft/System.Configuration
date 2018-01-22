@@ -2,7 +2,9 @@
 <x:ObjectContainer
                xmlns="clr-namespace:System.Configuration.Core.Tests,System.Configuration.Core.Tests"
                xmlns:x="http://schemas.myerpsoft.com/configuration/2015"
-               x:namespace="company.erp.demo">
+               x:namespace="company.erp.demo"
+               x:using="d2:company.erp.demo2 p2:company.erp.demo2,my.testPackage2"
+               >  
 
   <Window x:name="f4" >
     <Text>demo4</Text>
@@ -11,5 +13,23 @@
   <Window x:name="f3" x:action="edit">
     <Text>demo4 new</Text>
   </Window>
+
+  <!--来自同一个Repository，同一个Package，同一个Namespace 的对象指针（x:base)-->
+  <Window x:name="f5" x:base="f4" />
+
+  <!--来自不同的Repository(依赖的)，同一个Package，同一个Namespace 的对象指针-->
+  <Window x:name="f6" x:base="f1" />
+
+  <!--来自同一个Repository，同一个Package，不同的 Namespace 的对象指针-->
+  <Window x:name="f7" x:base="company.erp.demo2.f1" />
+
+  <!--来自同一个Repository，不同的Package，不同的 Namespace 的对象指针-->
+  <Window x:name="f8" x:base="company.erp.demo2.f1,my.testPackage2" />
+  
+  <!--测试使用前缀的写法，同一个package，namespace不同-->
+  <Window x:name="f9" x:base="d2:f1" />
+
+  <!--测试使用前缀的写法，package，namespace不同-->
+  <Window x:name="f10" x:base="p2:f1" />
   
 </x:ObjectContainer>
